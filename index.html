@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TME Bucket Percentile Plot</title>
+<title>TME Bucket Plot</title>
 <style>
 :root {
   --background: #f8f6f1;
@@ -34,17 +34,6 @@ h1 {
   color: var(--text-secondary);
   font-size: 15px;
 }
-.status-line {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 14px;
-  color: #2f6791;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
 .sr-only {
   position: absolute;
   width: 1px;
@@ -62,11 +51,6 @@ h1 {
 .viz-panel {
   flex: 1 1 820px;
   min-width: min(100%, 360px);
-}
-.plot-title {
-  margin: 0 0 8px;
-  font-size: 14px;
-  font-weight: 800;
 }
 .controls-panel {
   flex: 0 1 360px;
@@ -101,6 +85,36 @@ h1 {
   font-family: inherit;
   font-size: 13px;
   font-weight: 650;
+}
+.mode-pill {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  padding: 3px 9px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.mode-pill.custom {
+  border-color: #c98b74;
+  background: #fdf1ec;
+  color: #7c2d12;
+}
+.small-button {
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface-1);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  padding: 5px 8px;
+}
+.small-button:hover {
+  color: var(--text-primary);
 }
 .patient-note {
   color: var(--text-secondary);
@@ -239,41 +253,39 @@ a:hover {
 </head>
 <body>
 <main>
-<h1>TME Bucket Percentile Overlay</h1>
-<p class="status-line">Primary plot</p>
-<p class="dek">The working view is the petal plot: each TME score petal bulges by its axis percentile, and the buckets inside it divide that petal by share, so the bucket values in a score always total 100%. Bucket percentiles are shown only as baseline bars in the legend.</p>
-<h2 class="sr-only">Organic tumour shape divided into four quadrants whose boundary bulges by TME score, with gene-set buckets dividing each quadrant by share</h2>
+<h1>TME Bucket Plot</h1>
+<p class="dek">A patient-level view of the tumour microenvironment scores and the gene-set buckets that make them up. Each quadrant is one TME score; its outline shows the score percentile, while the wedges inside show how the buckets contribute to that score.</p>
+<h2 class="sr-only">Organic tumour shape divided into four TME score quadrants, with gene-set buckets dividing each quadrant by share</h2>
 <noscript><p class="load-error">This page draws the plot with JavaScript, which is disabled in this browser.</p></noscript>
 <p class="load-error" id="loadError" hidden></p>
 <div class="layout" id="plot">
 <div class="viz-panel">
-<p class="plot-title">Bucket share overlay</p>
 <div class="patient-bar">
   <label for="patient">Patient</label>
   <select id="patient"></select>
+  <span class="mode-pill" id="modePill">Patient</span>
+  <button class="small-button" id="resetPatient" type="button" hidden>Reset to patient</button>
   <span class="patient-note" id="patientNote"></span>
 </div>
-<svg id="tumour" viewBox="0 0 1260 600" role="img"><title>Organic tumour TME chart</title><desc>Tumour profile split into four quadrants sized by TME percentile, with bucket wedges dividing each quadrant by share and percentile bullets in the legend</desc></svg>
+<svg id="tumour" viewBox="0 0 1260 600" role="img"><title>TME bucket plot</title><desc>Tumour profile split into four score quadrants. The score outline shows axis percentile, and bucket wedges divide each score by share.</desc></svg>
 </div>
 <div class="controls-panel">
 <div id="scoreControls"></div>
 <details>
 <summary>Bucket share inputs</summary>
-<p class="control-hint">These sliders set each bucket's share input in the data's own units. Shares are always redrawn as value divided by the score total, so the quadrant stays at 100% whatever the inputs are.</p>
+<p class="control-hint">These sliders adjust the bucket input values. The plot redraws each bucket as its share of the score total, so the wedges in a quadrant always add up to 100%.</p>
 <div id="bucketControls"></div>
 </details>
 </div>
 </div>
 <section class="section" aria-labelledby="rationale-title">
-<h2 id="rationale-title">Rationale</h2>
+<h2 id="rationale-title">How To Read It</h2>
 <ul class="rationale-list">
-  <li>Bucket wedges span their score petal's radius and take an angular slice of the quadrant, so a bucket is contained within its TME score petal by construction and can never draw outside it.</li>
-  <li>Wedge width is the bucket's share of the score total, so the buckets in a quadrant sum to exactly 100%. Displayed percentages use largest-remainder rounding so they never print 99% or 101%.</li>
-  <li>Bucket percentile to baseline is no longer encoded by petal size or repeated as another score number. It is shown as a small baseline bar with a tick at the 50th percentile, which separates "how much of the score is this bucket" from "how does this bucket compare with the baseline cohort".</li>
-  <li>Share inputs are held in one place per bucket, so bucket-level normalised values can replace the raw bucket scores without any change to the geometry.</li>
-  <li>Bucket percentiles are used instead of raw bucket scores for the baseline comparison because absolute scores scale strongly with bucket size.</li>
-  <li>Raw percentage-contribution shares look very similar across patients, so they are poor at showing patient-specific differences.</li>
-  <li>The legend sits outside the plot so bucket names, share values and baseline bars can stay aligned without covering the petals.</li>
+  <li>The outer shape shows the four TME score percentiles for the selected patient: Angiogenesis, Immunogenicity, Fibrosis and EMT.</li>
+  <li>Inside each score, bucket wedges split the quadrant by share of that score. The shares are rounded so the displayed bucket values always total 100% within each score.</li>
+  <li>Bucket wedges are clipped inside their score outline, so a bucket can never visually exceed the score it belongs to.</li>
+  <li>The legend separates the two readings: <strong>Share of score</strong> is the printed percentage, while <strong>vs baseline</strong> is the small bar showing the bucket percentile against the GC PD-1 harmonised cohort.</li>
+  <li>The bucket input values are kept separate from the drawing logic, so normalised bucket values can replace the current raw bucket scores without changing the plot geometry.</li>
 </ul>
 </section>
 
@@ -282,7 +294,7 @@ a:hover {
 <ul class="link-list">
   <li>
     <a href="pages/gene-set-explorer.html">Explore bucket genes</a>
-    <span>Filter the mapped gene sets by TME score, bucket and subbucket, then drill into the genes behind each labelled pathway group.</span>
+    <span>Look up the genes behind each score, bucket and subbucket in the mapping used by the plot.</span>
   </li>
 </ul>
 </section>
@@ -292,11 +304,11 @@ a:hover {
 <ul class="link-list">
   <li>
     <a href="pages/score-size-bias.html">Archived rationale: bucket size bias</a>
-    <span>Thought process that led away from raw bucket scores and raw contribution petals, including the bucket-size scatterplot and comparison examples.</span>
+    <span>Earlier design note showing why raw bucket score and raw contribution views were not used as the main visual encoding.</span>
   </li>
   <li>
     <a href="pages/score-blob-summary.html">Score blob summary</a>
-    <span>Archived alternate view: four score blobs over a low-opacity tumour silhouette.</span>
+    <span>Archived alternate view that represented the four score percentiles as separate blobs.</span>
   </li>
 </ul>
 </section>
@@ -462,7 +474,7 @@ function renderQuadrantLabels(){
       svg+=bulletStrip(pos.x+barX, y, bucket.pct, fill);
     });
   });
-  svg+='<text x="'+cx+'" y="586" text-anchor="middle" fill="#5f5d59" font-size="11">Bucket rows use two result columns: share of score, and baseline percentile vs '+BASELINE_LABEL+'; the line marks the cohort median.</text>';
+  svg+='<text x="'+cx+'" y="586" text-anchor="middle" fill="#5f5d59" font-size="11">Bucket rows show share of score and percentile vs '+BASELINE_LABEL+'; the line marks the cohort median.</text>';
   return svg;
 }
 function render(){
@@ -521,12 +533,19 @@ function render(){
   svg+=renderQuadrantLabels();
   document.getElementById('tumour').innerHTML=svg;
 }
+let isCustom=false;
+function setCustomMode(custom){
+  isCustom=custom;
+  const pill=document.getElementById('modePill');
+  const reset=document.getElementById('resetPatient');
+  pill.textContent=custom ? 'Custom' : 'Patient';
+  pill.classList.toggle('custom', custom);
+  reset.hidden=!custom || !cohort;
+  updatePatientNote();
+}
 function markCustom(){
   const picker=document.getElementById('patient');
-  if(picker.value!=='custom'){
-    picker.value='custom';
-    updatePatientNote();
-  }
+  if(picker && cohort) setCustomMode(true);
 }
 function updateBucketValue(axisIndex, bucketIndex, value){
   axes[axisIndex].buckets[bucketIndex].v=+value;
@@ -558,19 +577,24 @@ function applyPatient(patientIndex){
     });
   });
   syncControls();
+  setCustomMode(false);
   render();
 }
 function updatePatientNote(){
   const picker=document.getElementById('patient');
   const note=document.getElementById('patientNote');
-  if(picker.value==='custom'){
-    note.textContent='Custom values. Percentiles vs '+BASELINE_LABEL+'.';
+  if(!cohort){
+    note.textContent='Patient data file not loaded; showing example values.';
     return;
   }
   const patient=cohort.patients[+picker.value];
-  note.textContent=patient.response+' - percentiles vs '+BASELINE_LABEL+'.';
+  if(isCustom){
+    note.textContent='Edited from '+patient.id+' ('+patient.response+'). Baseline bars use '+BASELINE_LABEL+'.';
+    return;
+  }
+  note.textContent=patient.id+' ('+patient.response+'). Baseline bars use '+BASELINE_LABEL+'.';
 }
-let scoreHtml='<div class="control-title">Axis percentile scores</div>';
+let scoreHtml='<div class="control-title">Score percentiles</div>';
 axes.forEach((ax,i)=>{
   scoreHtml+='<div class="control-row score-row"><span>'+ax.name+'</span><input id="axisScoreInput-'+i+'" type="range" min="0" max="100" value="'+ax.score+'" oninput="updateAxisScore('+i+',this.value)"></div>';
 });
@@ -586,15 +610,17 @@ const picker=document.getElementById('patient');
 if(cohort){
   picker.innerHTML=cohort.patients
     .map((p,i)=>'<option value="'+i+'">'+p.id+' ('+p.response+')</option>')
-    .join('')+'<option value="custom">Custom</option>';
+    .join('');
   picker.addEventListener('change',()=>{
-    if(picker.value!=='custom') applyPatient(+picker.value);
-    updatePatientNote();
+    applyPatient(+picker.value);
+  });
+  document.getElementById('resetPatient').addEventListener('click',()=>{
+    applyPatient(+picker.value);
   });
   applyPatient(0);
-  updatePatientNote();
 } else {
-  picker.innerHTML='<option value="custom">Custom</option>';
+  picker.innerHTML='<option>No patient data</option>';
+  document.getElementById('modePill').textContent='Example';
   document.getElementById('patientNote').textContent='Patient data file not loaded; showing example values.';
   const box=document.getElementById('loadError');
   box.hidden=false;

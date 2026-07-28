@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TME Gene Set Explorer</title>
+<title>TME Bucket Gene Explorer</title>
 <style>
 :root {
   --background: #f8f6f1;
@@ -167,9 +167,9 @@ tbody tr:hover {
 </head>
 <body>
 <main>
-<p class="page-links"><a href="../index.html">Back to petal plot</a></p>
-<h1>TME Gene Set Explorer</h1>
-<p class="dek">Explore the gene-set structure behind the four TME scores. Filter from score to bucket to subbucket, or search for a gene symbol, pathway term, score or bucket.</p>
+<p class="page-links"><a href="../index.html">Back to TME Bucket Plot</a></p>
+<h1>TME Bucket Gene Explorer</h1>
+<p class="dek">Browse the gene mapping behind the TME Bucket Plot. Filter from score to bucket to subbucket, or search for a gene symbol, pathway term, score or bucket.</p>
 
 <section class="filter-band" aria-label="Gene set filters">
   <div class="field">
@@ -199,7 +199,7 @@ tbody tr:hover {
 
 <section class="section" aria-labelledby="subbucket-title">
   <h2 id="subbucket-title">Subbucket Summary</h2>
-  <p class="section-note">One row per labelled subbucket after the current filters. Use this to understand the pathway groupings before drilling into genes.</p>
+  <p class="section-note">One row per subbucket after the current filters. Use this to scan the pathway groups before drilling into individual genes.</p>
   <div class="table-wrap">
     <table>
       <thead>
@@ -217,7 +217,7 @@ tbody tr:hover {
 
 <section class="section" aria-labelledby="gene-title">
   <h2 id="gene-title">Genes</h2>
-  <p class="section-note" id="geneNote">Showing matching genes.</p>
+  <p class="section-note" id="geneNote">Showing genes in the current mapping.</p>
   <div class="table-wrap">
     <table>
       <thead>

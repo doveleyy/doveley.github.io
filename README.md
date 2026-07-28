@@ -1,11 +1,10 @@
-# TME Bucket Percentile Plot
+# TME Bucket Plot
 
-Static GitHub Pages prototype for the TME bucket percentile petal plot.
+Static GitHub Pages prototype for the TME Bucket Plot.
 
-Each score petal bulges by its TME axis percentile. Inside it, bucket wedges span the petal's radius and
-take an angular slice equal to their share of the score, so buckets are contained within their score petal
-by construction and their displayed percentages total 100%. Percentile to baseline is shown as a legend
-bullet strip rather than by bucket petal size.
+Each score petal outlines the selected patient's TME score percentile. Inside that outline, bucket wedges
+split the score by share, so buckets stay contained within their score and their displayed percentages total
+100%. Bucket baseline percentiles are shown separately as small bars in the legend.
 
 ## Preview locally
 
@@ -27,8 +26,8 @@ If port `8000` is busy:
 
 ## Site structure
 
-- `index.html` - main page: primary petal plot, rationale, and archive links.
-- `pages/gene-set-explorer.html` - filterable table for genes, buckets, and subbuckets.
+- `index.html` - main page: TME Bucket Plot, reading notes, gene explorer link, and archive links.
+- `pages/gene-set-explorer.html` - filterable mapping table for genes, buckets, and subbuckets.
 - `pages/score-size-bias.html` - archived rationale page for bucket-size bias and raw contribution examples.
 - `pages/score-blob-summary.html` - archived alternate visual.
 - `data/` - source CSVs and bucket mapping outputs used to generate/check the figures.
