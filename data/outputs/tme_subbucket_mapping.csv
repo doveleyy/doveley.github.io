@@ -1,155 +1,155 @@
-score,bucket,sub_bucket_id,sub_bucket_label,confidence,n_label_genes,status,n_genes
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_7,Angiogenic Growth Factor Signalling,High,79,Unchanged,79
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_2,Cytokine & Chemokine Signalling,High,79,Unchanged,79
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_3,Endothelial Cell Migration,High,47,Relabelled,47
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_12,Endothelial Transcription Factors,High,70,Unchanged,70
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_9,FGF/PDGF/HGF RTK Signalling,High,70,Unchanged,70
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_13,Hypoxia-Induced Integrated Stress Response,High,49,Condensed,49
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_1,Lipoprotein Transport,Medium,21,Unchanged,21
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_8,Morphogenic Signalling,High,26,Unchanged,26
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_6,PI3K/Akt/MAPK Signalling,High,58,Unchanged,58
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_5,Phospholipid Signalling,High,44,Unchanged,44
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_4,Ras/MAPK Signalling,High,29,Unchanged,29
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_10,Ubiquitin-Mediated Receptor Turnover,Medium,21,Unchanged,21
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_11,Vascular Matrix Remodelling,High,49,Unchanged,49
-Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_0,Vasoactive GPCR Signalling,High,34,Unchanged,34
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_10,BMP/ALK1 Signalling,High,55,Condensed,55
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_2,Elastic Fibre Assembly,High,26,Unchanged,26
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_7,Endothelial Apical-Basal Polarity & Barrier Regulation,Medium,35,Condensed,35
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_4,Endothelial Haemostasis & Coagulation,Medium,52,Unchanged,52
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_12,Endothelial Identity & Vascular Bed Specification,High,54,Relabelled,54
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_3,Endothelial Stress Adaptation,Low,20,Labelled,20
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_9,Endothelial-to-Mesenchymal Transition,Low,30,Labelled,30
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_5,Inflammatory Endothelial Activation,Medium,69,Absorbs ECS4,69
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_13,NO/cGMP Signalling,High,56,Condensed,56
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_8,Notch Signalling,High,23,Condensed,23
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_6,Pericyte Contractile Cytoskeleton,High,48,Unchanged,48
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_0,Periendothelial Matrix Assembly,High,27,Condensed,27
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_1,Proteoglycan Synthesis & ECM Remodelling,Medium,20,Condensed,20
-Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_11,Rap1/CCM Signalling,High,50,Condensed,50
-Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_3,ER Stress Transcriptional Response,Medium,21,Unchanged,21
-Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_0,HIF-Driven Hypoxic Response,Medium,82,Unchanged,82
-Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_4,Metabolic Reprogramming,High,61,Unchanged,61
-Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_5,Oxygen Sensing Machinery,Medium,28,Unchanged,28
-Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_1,PI3K/Akt/CaMKII Signalling,Medium,66,Relabelled,66
-Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_6,Proteoglycan/Glycosaminoglycan Biosynthesis,High,20,Unchanged,20
-Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_2,mTOR Signalling,High,20,Condensed,20
-EMT,EMT Initiation,emt_initiation_louvain_5,BMP/Activin Signalling,High,45,Unchanged,45
-EMT,EMT Initiation,emt_initiation_louvain_11,Canonical Wnt Signalling,High,21,Unchanged,21
-EMT,EMT Initiation,emt_initiation_louvain_7,Epigenetic Regulation of Transcription,High,43,Unchanged,43
-EMT,EMT Initiation,emt_initiation_louvain_1,Glucose & Glycogen Metabolism,High,28,Unchanged,28
-EMT,EMT Initiation,emt_initiation_louvain_9,Hedgehog Signalling,High,60,Unchanged,60
-EMT,EMT Initiation,emt_initiation_louvain_0,Hypoxia-Induced Glycolytic Programming,High,59,Unchanged,59
-EMT,EMT Initiation,emt_initiation_louvain_10,Non-Canonical Wnt signalling,High,25,Unchanged,25
-EMT,EMT Initiation,emt_initiation_louvain_8,Notch Signalling,High,38,Unchanged,38
-EMT,EMT Initiation,emt_initiation_louvain_3,PI3K/Akt/mTOR Signalling,High,71,Unchanged,71
-EMT,EMT Initiation,emt_initiation_louvain_2,PI3K/NF-kB Signalling & Cytoskeletal Remodelling,High,73,Relabelled,73
-EMT,EMT Initiation,emt_initiation_louvain_4,Stress-Responsive EMT Induction,High,50,Unchanged,50
-EMT,EMT Initiation,emt_initiation_louvain_6,TGF-β/Smad signalling,High,37,Unchanged,37
-EMT,EMT Initiation,emt_initiation_louvain_12,Wnt Ligand-Receptor Interaction,High,75,Unchanged,75
-EMT,EMT Maintenance,emt_maintenance_louvain_17,Cytokine & Interleukin Receptor Signalling,High,80,Unchanged,80
-EMT,EMT Maintenance,emt_maintenance_louvain_9,ECM Receptor Interaction,High,67,Unchanged,67
-EMT,EMT Maintenance,emt_maintenance_louvain_13,Epithelial-Stromal RTK Signalling,High,70,Relabelled,70
-EMT,EMT Maintenance,emt_maintenance_louvain_10,Focal Adhesion Complex,High,20,Unchanged,20
-EMT,EMT Maintenance,emt_maintenance_louvain_2,GPCR Signalling,High,48,Unchanged,48
-EMT,EMT Maintenance,emt_maintenance_louvain_11,Inflammatory Cell Adhesion Molecules,Medium,23,Unchanged,23
-EMT,EMT Maintenance,emt_maintenance_louvain_16,Interferon/IL-10 Cytokine Signalling,High,37,Unchanged,37
-EMT,EMT Maintenance,emt_maintenance_louvain_1,Intracellular Signalling Cascades,Medium,39,Unchanged,39
-EMT,EMT Maintenance,emt_maintenance_louvain_15,JAK-STAT Signalling,High,24,Unchanged,24
-EMT,EMT Maintenance,emt_maintenance_louvain_4,MAPK Signalling,High,63,Unchanged,63
-EMT,EMT Maintenance,emt_maintenance_louvain_14,NF-kB Signalling,High,70,Unchanged,70
-EMT,EMT Maintenance,emt_maintenance_louvain_7,PKA/CREB Signalling,Medium,28,Unchanged,28
-EMT,EMT Maintenance,emt_maintenance_louvain_3,Protein Phosphatase Regulation,Medium,29,Unchanged,29
-EMT,EMT Maintenance,emt_maintenance_louvain_5,Stress-Activated Protein Kinase Signalling,High,24,Unchanged,24
-EMT,EMT Maintenance,emt_maintenance_louvain_12,Vascular RTK Signalling,High,30,Condensed,30
-EMT,EMT Maintenance,emt_maintenance_louvain_0,Voltage-Gated Calcium Channel Signalling,High,31,Unchanged,31
-EMT,EMT Maintenance,emt_maintenance_louvain_6,mTOR/AMPK Signalling,High,26,Unchanged,26
-EMT,EMT Maintenance,emt_maintenance_louvain_8,p53-mediated DNA Damage Response,High,67,Condensed,67
-EMT,Epithelial Markers,epithelial_markers_louvain_2,Epithelial Junction Organisation,High,71,,71
-EMT,Epithelial Markers,epithelial_markers_louvain_3,ErbB/FGFR RTK Signalling,Medium,23,,23
-EMT,Epithelial Markers,epithelial_markers_louvain_1,Luminal Epithelial Identity,Medium,49,,49
-EMT,Epithelial Markers,epithelial_markers_louvain_0,Stress-Responsive Signalling,Low,31,,31
-EMT,Mesenchymal Markers,mesenchymal_markers_louvain_0,Actomyosin Contractility,Medium,52,Unchanged,52
-EMT,Mesenchymal Markers,mesenchymal_markers_louvain_7,Collagen Fibril Organisation,High,61,Unchanged,61
-EMT,Mesenchymal Markers,mesenchymal_markers_louvain_4,Cytokine & Chemokine Signalling,High,30,Unchanged,30
-EMT,Mesenchymal Markers,mesenchymal_markers_louvain_1,ECM-Receptor Interaction,High,35,Unchanged,35
-EMT,Mesenchymal Markers,mesenchymal_markers_louvain_5,EMT Transcription Factors,High,42,Unchanged,42
-EMT,Mesenchymal Markers,mesenchymal_markers_louvain_2,Growth Factor Signalling,Low,27,Labelled,27
-EMT,Mesenchymal Markers,mesenchymal_markers_louvain_6,Matricellular Proteins,Medium,26,Unchanged,26
-EMT,Mesenchymal Markers,mesenchymal_markers_louvain_3,Mesenchymal Secretome,Medium,75,Unchanged,75
-Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_3,Basement Membrane Organisation,High,24,Relabelled,24
-Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_7,Cell Cycle G1/S Transition,Medium,26,Unchanged,26
-Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_2,Collagen Formation,High,28,Unchanged,28
-Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_5,Growth Factor Signalling,High,30,Unchanged,30
-Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_0,Integrin-Mediated Focal Adhesion,Medium,38,Unchanged,38
-Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_6,Intracellular Signal Transduction,Medium,37,Unchanged,37
-Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_1,Leukocyte and Platelet Adhesion,High,53,Unchanged,53
-Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_4,Matrix Adhesion Signalling,High,30,Unchanged,30
-Fibrosis,ECM Remodelling,ecm_remodelling_louvain_5,Collagen Fibril Organisation,High,70,Unchanged,70
-Fibrosis,ECM Remodelling,ecm_remodelling_louvain_4,ECM-Receptor Interaction,High,72,Unchanged,72
-Fibrosis,ECM Remodelling,ecm_remodelling_louvain_6,Elastic Fibre & Proteoglycan Matrix Assembly,Low,49,Labelled,49
-Fibrosis,ECM Remodelling,ecm_remodelling_louvain_1,Matrix Degradation,Medium,80,Unchanged,80
-Fibrosis,ECM Remodelling,ecm_remodelling_louvain_2,Plasminogen Activation and Fibrinolysis,Medium,33,Unchanged,33
-Fibrosis,ECM Remodelling,ecm_remodelling_louvain_3,TGF-β/Smad-driven Transcriptional Programme,High,73,Unchanged,73
-Fibrosis,ECM Remodelling,ecm_remodelling_louvain_0,Vesicle-Mediated Trafficking,Low,14,Unchanged,14
-Fibrosis,Fibroblast Signature,fibroblast_signature_louvain_3,Chromatin-Regulated Cell Cycle Control,High,96,Absorbs FS1,96
-Fibrosis,Fibroblast Signature,fibroblast_signature_louvain_0,Cytoskeletal Remodelling,High,50,Unchanged,50
-Fibrosis,Fibroblast Signature,fibroblast_signature_louvain_1,Myofibroblast Differentiation,High,54,Unchanged,54
-Fibrosis,Fibroblast Signature,fibroblast_signature_louvain_2,Wnt Signalling,Medium,20,Unchanged,20
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_5,BMP/Smad signalling,High,78,Unchanged,78
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_10,Canonical Wnt Signalling,High,23,Unchanged,23
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_3,Cell Cycle G1/S Transition,High,21,Unchanged,21
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_13,Cytokine-Cyotkine Receptor Interaction,High,67,Unchanged,67
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_8,FGF Signalling,High,55,Unchanged,55
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_2,HIF-1 Signalling,Medium,73,Unchanged,73
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_15,Hedgehog Signalling,High,54,Unchanged,54
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_14,JAK-STAT Signalling,High,78,Unchanged,78
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_9,Matricellular Signalling,High,32,Unchanged,32
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_0,Metabolic Reprogramming,High,30,Unchanged,30
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_1,NF-kB/JNK Inflammatory Signalling & Myofibroblast Activation,Medium,38,Condensed,38
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_11,Non-Canonical Wnt signalling,High,26,Unchanged,26
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_6,Notch Signalling,High,66,Unchanged,66
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_7,RTK Signalling,High,69,Unchanged,69
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_4,TGF-beta Signalling,High,20,Unchanged,20
-Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_12,Wnt Ligand-Receptor Interaction,High,60,Unchanged,60
-Immunogenicity,Antigen Presentation,antigen_presentation_louvain_6,Antigen Processing & Presentation,High,44,Unchanged,44
-Immunogenicity,Antigen Presentation,antigen_presentation_louvain_3,Cytoskeletal Organisation,Medium,64,Unchanged,64
-Immunogenicity,Antigen Presentation,antigen_presentation_louvain_5,Endocytic Trafficking,Medium,39,Unchanged,39
-Immunogenicity,Antigen Presentation,antigen_presentation_louvain_0,IFN-γ-Regulated Antigen Processing,Medium,21,Relabelled,21
-Immunogenicity,Antigen Presentation,antigen_presentation_louvain_1,Immunoglobulin-Mediated Adaptive Immunity,Medium,26,Unchanged,26
-Immunogenicity,Antigen Presentation,antigen_presentation_louvain_2,Lysosomal Proteolysis,High,5,Unchanged,5
-Immunogenicity,Antigen Presentation,antigen_presentation_louvain_4,NK Cell Cytotoxicity,High,10,Unchanged,10
-Immunogenicity,Inflammation,inflammation_louvain_4,Chemokine Signalling,High,10,Unchanged,10
-Immunogenicity,Inflammation,inflammation_louvain_11,Cytokine-Cytokine Receptor Interaction,High,10,Unchanged,10
-Immunogenicity,Inflammation,inflammation_louvain_7,DAMP/TLR-Driven Inflammation,High,45,Absorbs B9,45
-Immunogenicity,Inflammation,inflammation_louvain_5,Fc receptor-mediated Signalling,High,30,Unchanged,30
-Immunogenicity,Inflammation,inflammation_louvain_6,Integrin Signalling,Medium,5,Unchanged,5
-Immunogenicity,Inflammation,inflammation_louvain_10,JAK-STAT Signalling Pathway,High,10,Unchanged,10
-Immunogenicity,Inflammation,inflammation_louvain_3,Leukocyte Degranulation,Medium,7,Unchanged,7
-Immunogenicity,Inflammation,inflammation_louvain_8,Leukocyte Transendothelial Migration,Low,9,Labelled,9
-Immunogenicity,Inflammation,inflammation_louvain_2,Leukotriene Biosynthesis,Low,7,Labelled,7
-Immunogenicity,Inflammation,inflammation_louvain_0,NLRP6 Inflammasome Signalling,High,9,Relabelled,9
-Immunogenicity,Inflammation,inflammation_louvain_9,NOD Signalling,Low,6,Labelled,6
-Immunogenicity,Inflammation,inflammation_louvain_1,T-Cell Co-Stimulatory Checkpoint,Low,11,Labelled,11
-Immunogenicity,Inflammation,inflammation_louvain_12,Th1/Th2 Cell Differentiation,High,5,Unchanged,5
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_11,Akt/CREB Transcriptional Signalling,Medium,23,Unchanged,23
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_10,Antigen Processing and Presentation,Medium,10,Unchanged,10
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_9,Chemokine Signalling,High,31,Unchanged,31
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_8,Complement & Coagulation Cascade,High,20,Unchanged,20
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_1,Complement Activation,High,13,Unchanged,13
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_0,DAMP-Mediated MAPK Signalling,High,45,Relabelled,45
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_2,Epigenetic Innate Immune Regulation,Low,6,Labelled,6
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_12,JAK-STAT Signalling Pathway,High,40,Unchanged,40
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_5,Leukocyte Degranulation,Medium,7,Unchanged,7
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_7,NK-Cell Mediated Cytotoxicity,High,47,Unchanged,47
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_6,Phagolysosomal RAB GTPase Trafficking,High,5,Condensed,5
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_4,RNA Pol III Innate Immune Sensing,High,17,Relabelled,17
-Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_3,Toll-Like Receptor Signalling Pathway,High,70,Unchanged,70
-Immunogenicity,TME/Stroma,tme_stroma_louvain_5,BMP/TGF-β signalling,High,22,Unchanged,22
-Immunogenicity,TME/Stroma,tme_stroma_louvain_7,Glycolysis,High,7,Unchanged,7
-Immunogenicity,TME/Stroma,tme_stroma_louvain_3,HIF/NF-kB Crosstalk,Low,35,Relabelled,35
-Immunogenicity,TME/Stroma,tme_stroma_louvain_4,MAPK Signalling,Medium,23,Unchanged,23
-Immunogenicity,TME/Stroma,tme_stroma_louvain_2,Ras/PI3K/Akt Pathway,High,39,Unchanged,39
-Immunogenicity,TME/Stroma,tme_stroma_louvain_9,TCR & Calcium/NFAT signalling,High,12,Unchanged,12
-Immunogenicity,TME/Stroma,tme_stroma_louvain_0,TGF-β Signalling,High,41,Unchanged,41
-Immunogenicity,TME/Stroma,tme_stroma_louvain_1,mTOR-mediated Translational Regulation,Medium,25,Unchanged,25
+score,bucket,sub_bucket_id,sub_bucket_label,n_label_genes,n_genes
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_7,Angiogenic Growth Factor Signalling,79,79
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_2,Cytokine & Chemokine Signalling,79,79
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_3,Endothelial Cell Migration,47,47
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_12,Endothelial Transcription Factors,70,70
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_9,FGF/PDGF/HGF RTK Signalling,70,70
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_13,Hypoxia-Induced Integrated Stress Response,49,49
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_1,Lipoprotein Transport,21,21
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_8,Morphogenic Signalling,26,26
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_6,PI3K/Akt/MAPK Signalling,58,58
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_5,Phospholipid Signalling,44,44
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_4,Ras/MAPK Signalling,29,29
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_10,Ubiquitin-Mediated Receptor Turnover,21,21
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_11,Vascular Matrix Remodelling,49,49
+Angiogenesis,Angiogenic Signalling,angiogenic_signalling_louvain_0,Vasoactive GPCR Signalling,34,34
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_10,BMP/ALK1 Signalling,55,55
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_2,Elastic Fibre Assembly,26,26
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_7,Endothelial Apical-Basal Polarity & Barrier Regulation,35,35
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_4,Endothelial Haemostasis & Coagulation,52,52
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_12,Endothelial Identity & Vascular Bed Specification,54,54
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_3,Endothelial Stress Adaptation,20,20
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_9,Endothelial-to-Mesenchymal Transition,30,30
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_5,Inflammatory Endothelial Activation,69,69
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_13,NO/cGMP Signalling,56,56
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_8,Notch Signalling,23,23
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_6,Pericyte Contractile Cytoskeleton,48,48
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_0,Periendothelial Matrix Assembly,27,27
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_1,Proteoglycan Synthesis & ECM Remodelling,20,20
+Angiogenesis,Endothelial Cell Signature,endothelial_cell_signature_louvain_11,Rap1/CCM Signalling,50,50
+Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_3,ER Stress Transcriptional Response,21,21
+Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_0,HIF-Driven Hypoxic Response,82,82
+Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_4,Metabolic Reprogramming,61,61
+Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_5,Oxygen Sensing Machinery,28,28
+Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_1,PI3K/Akt/CaMKII Signalling,66,66
+Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_6,Proteoglycan/Glycosaminoglycan Biosynthesis,20,20
+Angiogenesis,Hypoxia Signalling,hypoxia_signalling_louvain_2,mTOR Signalling,20,20
+EMT,EMT Initiation,emt_initiation_louvain_5,BMP/Activin Signalling,45,45
+EMT,EMT Initiation,emt_initiation_louvain_11,Canonical Wnt Signalling,21,21
+EMT,EMT Initiation,emt_initiation_louvain_7,Epigenetic Regulation of Transcription,43,43
+EMT,EMT Initiation,emt_initiation_louvain_1,Glucose & Glycogen Metabolism,28,28
+EMT,EMT Initiation,emt_initiation_louvain_9,Hedgehog Signalling,60,60
+EMT,EMT Initiation,emt_initiation_louvain_0,Hypoxia-Induced Glycolytic Programming,59,59
+EMT,EMT Initiation,emt_initiation_louvain_10,Non-Canonical Wnt signalling,25,25
+EMT,EMT Initiation,emt_initiation_louvain_8,Notch Signalling,38,38
+EMT,EMT Initiation,emt_initiation_louvain_3,PI3K/Akt/mTOR Signalling,71,71
+EMT,EMT Initiation,emt_initiation_louvain_2,PI3K/NF-kB Signalling & Cytoskeletal Remodelling,73,73
+EMT,EMT Initiation,emt_initiation_louvain_4,Stress-Responsive EMT Induction,50,50
+EMT,EMT Initiation,emt_initiation_louvain_6,TGF-β/Smad signalling,37,37
+EMT,EMT Initiation,emt_initiation_louvain_12,Wnt Ligand-Receptor Interaction,75,75
+EMT,EMT Maintenance,emt_maintenance_louvain_17,Cytokine & Interleukin Receptor Signalling,80,80
+EMT,EMT Maintenance,emt_maintenance_louvain_9,ECM Receptor Interaction,67,67
+EMT,EMT Maintenance,emt_maintenance_louvain_13,Epithelial-Stromal RTK Signalling,70,70
+EMT,EMT Maintenance,emt_maintenance_louvain_10,Focal Adhesion Complex,20,20
+EMT,EMT Maintenance,emt_maintenance_louvain_2,GPCR Signalling,48,48
+EMT,EMT Maintenance,emt_maintenance_louvain_11,Inflammatory Cell Adhesion Molecules,23,23
+EMT,EMT Maintenance,emt_maintenance_louvain_16,Interferon/IL-10 Cytokine Signalling,37,37
+EMT,EMT Maintenance,emt_maintenance_louvain_1,Intracellular Signalling Cascades,39,39
+EMT,EMT Maintenance,emt_maintenance_louvain_15,JAK-STAT Signalling,24,24
+EMT,EMT Maintenance,emt_maintenance_louvain_4,MAPK Signalling,63,63
+EMT,EMT Maintenance,emt_maintenance_louvain_14,NF-kB Signalling,70,70
+EMT,EMT Maintenance,emt_maintenance_louvain_7,PKA/CREB Signalling,28,28
+EMT,EMT Maintenance,emt_maintenance_louvain_3,Protein Phosphatase Regulation,29,29
+EMT,EMT Maintenance,emt_maintenance_louvain_5,Stress-Activated Protein Kinase Signalling,24,24
+EMT,EMT Maintenance,emt_maintenance_louvain_12,Vascular RTK Signalling,30,30
+EMT,EMT Maintenance,emt_maintenance_louvain_0,Voltage-Gated Calcium Channel Signalling,31,31
+EMT,EMT Maintenance,emt_maintenance_louvain_6,mTOR/AMPK Signalling,26,26
+EMT,EMT Maintenance,emt_maintenance_louvain_8,p53-mediated DNA Damage Response,67,67
+EMT,Epithelial Markers,epithelial_markers_louvain_2,Epithelial Junction Organisation,71,71
+EMT,Epithelial Markers,epithelial_markers_louvain_3,ErbB/FGFR RTK Signalling,23,23
+EMT,Epithelial Markers,epithelial_markers_louvain_1,Luminal Epithelial Identity,49,49
+EMT,Epithelial Markers,epithelial_markers_louvain_0,Stress-Responsive Signalling,31,31
+EMT,Mesenchymal Markers,mesenchymal_markers_louvain_0,Actomyosin Contractility,52,52
+EMT,Mesenchymal Markers,mesenchymal_markers_louvain_7,Collagen Fibril Organisation,61,61
+EMT,Mesenchymal Markers,mesenchymal_markers_louvain_4,Cytokine & Chemokine Signalling,30,30
+EMT,Mesenchymal Markers,mesenchymal_markers_louvain_1,ECM-Receptor Interaction,35,35
+EMT,Mesenchymal Markers,mesenchymal_markers_louvain_5,EMT Transcription Factors,42,42
+EMT,Mesenchymal Markers,mesenchymal_markers_louvain_2,Growth Factor Signalling,27,27
+EMT,Mesenchymal Markers,mesenchymal_markers_louvain_6,Matricellular Proteins,26,26
+EMT,Mesenchymal Markers,mesenchymal_markers_louvain_3,Mesenchymal Secretome,75,75
+Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_3,Basement Membrane Organisation,24,24
+Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_7,Cell Cycle G1/S Transition,26,26
+Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_2,Collagen Formation,28,28
+Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_5,Growth Factor Signalling,30,30
+Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_0,Integrin-Mediated Focal Adhesion,38,38
+Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_6,Intracellular Signal Transduction,37,37
+Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_1,Leukocyte and Platelet Adhesion,53,53
+Fibrosis,Cell-Matrix Adhesion,cell-matrix_adhesion_louvain_4,Matrix Adhesion Signalling,30,30
+Fibrosis,ECM Remodelling,ecm_remodelling_louvain_5,Collagen Fibril Organisation,70,70
+Fibrosis,ECM Remodelling,ecm_remodelling_louvain_4,ECM-Receptor Interaction,72,72
+Fibrosis,ECM Remodelling,ecm_remodelling_louvain_6,Elastic Fibre & Proteoglycan Matrix Assembly,49,49
+Fibrosis,ECM Remodelling,ecm_remodelling_louvain_1,Matrix Degradation,80,80
+Fibrosis,ECM Remodelling,ecm_remodelling_louvain_2,Plasminogen Activation and Fibrinolysis,33,33
+Fibrosis,ECM Remodelling,ecm_remodelling_louvain_3,TGF-β/Smad-driven Transcriptional Programme,73,73
+Fibrosis,ECM Remodelling,ecm_remodelling_louvain_0,Vesicle-Mediated Trafficking,14,14
+Fibrosis,Fibroblast Signature,fibroblast_signature_louvain_3,Chromatin-Regulated Cell Cycle Control,96,96
+Fibrosis,Fibroblast Signature,fibroblast_signature_louvain_0,Cytoskeletal Remodelling,50,50
+Fibrosis,Fibroblast Signature,fibroblast_signature_louvain_1,Myofibroblast Differentiation,54,54
+Fibrosis,Fibroblast Signature,fibroblast_signature_louvain_2,Wnt Signalling,20,20
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_5,BMP/Smad signalling,78,78
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_10,Canonical Wnt Signalling,23,23
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_3,Cell Cycle G1/S Transition,21,21
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_13,Cytokine-Cyotkine Receptor Interaction,67,67
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_8,FGF Signalling,55,55
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_2,HIF-1 Signalling,73,73
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_15,Hedgehog Signalling,54,54
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_14,JAK-STAT Signalling,78,78
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_9,Matricellular Signalling,32,32
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_0,Metabolic Reprogramming,30,30
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_1,NF-kB/JNK Inflammatory Signalling & Myofibroblast Activation,38,38
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_11,Non-Canonical Wnt signalling,26,26
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_6,Notch Signalling,66,66
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_7,RTK Signalling,69,69
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_4,TGF-beta Signalling,20,20
+Fibrosis,Pro-Fibrotic Signalling,pro-fibrotic_signalling_louvain_12,Wnt Ligand-Receptor Interaction,60,60
+Immunogenicity,Antigen Presentation,antigen_presentation_louvain_6,Antigen Processing & Presentation,44,44
+Immunogenicity,Antigen Presentation,antigen_presentation_louvain_3,Cytoskeletal Organisation,64,64
+Immunogenicity,Antigen Presentation,antigen_presentation_louvain_5,Endocytic Trafficking,39,39
+Immunogenicity,Antigen Presentation,antigen_presentation_louvain_0,IFN-γ-Regulated Antigen Processing,21,21
+Immunogenicity,Antigen Presentation,antigen_presentation_louvain_1,Immunoglobulin-Mediated Adaptive Immunity,26,26
+Immunogenicity,Antigen Presentation,antigen_presentation_louvain_2,Lysosomal Proteolysis,5,5
+Immunogenicity,Antigen Presentation,antigen_presentation_louvain_4,NK Cell Cytotoxicity,10,10
+Immunogenicity,Inflammation,inflammation_louvain_4,Chemokine Signalling,10,10
+Immunogenicity,Inflammation,inflammation_louvain_11,Cytokine-Cytokine Receptor Interaction,10,10
+Immunogenicity,Inflammation,inflammation_louvain_7,DAMP/TLR-Driven Inflammation,45,45
+Immunogenicity,Inflammation,inflammation_louvain_5,Fc receptor-mediated Signalling,30,30
+Immunogenicity,Inflammation,inflammation_louvain_6,Integrin Signalling,5,5
+Immunogenicity,Inflammation,inflammation_louvain_10,JAK-STAT Signalling Pathway,10,10
+Immunogenicity,Inflammation,inflammation_louvain_3,Leukocyte Degranulation,7,7
+Immunogenicity,Inflammation,inflammation_louvain_8,Leukocyte Transendothelial Migration,9,9
+Immunogenicity,Inflammation,inflammation_louvain_2,Leukotriene Biosynthesis,7,7
+Immunogenicity,Inflammation,inflammation_louvain_0,NLRP6 Inflammasome Signalling,9,9
+Immunogenicity,Inflammation,inflammation_louvain_9,NOD Signalling,6,6
+Immunogenicity,Inflammation,inflammation_louvain_1,T-Cell Co-Stimulatory Checkpoint,11,11
+Immunogenicity,Inflammation,inflammation_louvain_12,Th1/Th2 Cell Differentiation,5,5
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_11,Akt/CREB Transcriptional Signalling,23,23
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_10,Antigen Processing and Presentation,10,10
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_9,Chemokine Signalling,31,31
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_8,Complement & Coagulation Cascade,20,20
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_1,Complement Activation,13,13
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_0,DAMP-Mediated MAPK Signalling,45,45
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_2,Epigenetic Innate Immune Regulation,6,6
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_12,JAK-STAT Signalling Pathway,40,40
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_5,Leukocyte Degranulation,7,7
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_7,NK-Cell Mediated Cytotoxicity,47,47
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_6,Phagolysosomal RAB GTPase Trafficking,5,5
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_4,RNA Pol III Innate Immune Sensing,17,17
+Immunogenicity,Innate Immune Activation,innate_immune_activation_louvain_3,Toll-Like Receptor Signalling Pathway,70,70
+Immunogenicity,TME/Stroma,tme_stroma_louvain_5,BMP/TGF-β signalling,22,22
+Immunogenicity,TME/Stroma,tme_stroma_louvain_7,Glycolysis,7,7
+Immunogenicity,TME/Stroma,tme_stroma_louvain_3,HIF/NF-kB Crosstalk,35,35
+Immunogenicity,TME/Stroma,tme_stroma_louvain_4,MAPK Signalling,23,23
+Immunogenicity,TME/Stroma,tme_stroma_louvain_2,Ras/PI3K/Akt Pathway,39,39
+Immunogenicity,TME/Stroma,tme_stroma_louvain_9,TCR & Calcium/NFAT signalling,12,12
+Immunogenicity,TME/Stroma,tme_stroma_louvain_0,TGF-β Signalling,41,41
+Immunogenicity,TME/Stroma,tme_stroma_louvain_1,mTOR-mediated Translational Regulation,25,25

@@ -78,6 +78,48 @@ h1 {
   width: 100%;
   height: auto;
 }
+.patient-bar {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 10px;
+}
+.patient-bar label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.patient-bar select {
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface-1);
+  padding: 5px 8px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 650;
+}
+.patient-note {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.load-error {
+  margin: 0 0 16px;
+  border: 1px solid #c98b74;
+  border-left-width: 4px;
+  border-radius: 5px;
+  background: #fdf1ec;
+  padding: 10px 12px;
+  color: #7c2d12;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.load-error code {
+  font-size: 12px;
+}
 .control-title {
   margin: 0 0 8px;
   color: var(--text-secondary);
@@ -85,6 +127,12 @@ h1 {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+}
+.control-hint {
+  margin: 0 0 10px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
 }
 .control-row {
   display: flex;
@@ -193,17 +241,25 @@ a:hover {
 <main>
 <h1>TME Bucket Percentile Overlay</h1>
 <p class="status-line">Primary plot</p>
-<p class="dek">The working view is the petal plot: TME axis scores and bucket percentiles shown together, with the bucket legend kept outside the plot area for readability.</p>
-<h2 class="sr-only">Organic tumour shape divided into four quadrants whose boundary bulges by TME score, with gene-set buckets layered inside each quadrant</h2>
+<p class="dek">The working view is the petal plot: each TME score petal bulges by its axis percentile, and the buckets inside it divide that petal by share, so the bucket values in a score always total 100%. Bucket percentiles are shown only as baseline bars in the legend.</p>
+<h2 class="sr-only">Organic tumour shape divided into four quadrants whose boundary bulges by TME score, with gene-set buckets dividing each quadrant by share</h2>
+<noscript><p class="load-error">This page draws the plot with JavaScript, which is disabled in this browser.</p></noscript>
+<p class="load-error" id="loadError" hidden></p>
 <div class="layout" id="plot">
 <div class="viz-panel">
-<p class="plot-title">Bucket percentile overlay</p>
-<svg id="tumour" viewBox="0 0 1040 700" role="img"><title>Organic tumour TME chart</title><desc>Tumour profile split into four quadrants, with TME scores and bucket percentile labels shown inside the plot</desc></svg>
+<p class="plot-title">Bucket share overlay</p>
+<div class="patient-bar">
+  <label for="patient">Patient</label>
+  <select id="patient"></select>
+  <span class="patient-note" id="patientNote"></span>
+</div>
+<svg id="tumour" viewBox="0 0 1260 600" role="img"><title>Organic tumour TME chart</title><desc>Tumour profile split into four quadrants sized by TME percentile, with bucket wedges dividing each quadrant by share and percentile bullets in the legend</desc></svg>
 </div>
 <div class="controls-panel">
 <div id="scoreControls"></div>
 <details>
-<summary>Bucket percentile controls</summary>
+<summary>Bucket share inputs</summary>
+<p class="control-hint">These sliders set each bucket's share input in the data's own units. Shares are always redrawn as value divided by the score total, so the quadrant stays at 100% whatever the inputs are.</p>
 <div id="bucketControls"></div>
 </details>
 </div>
@@ -211,17 +267,33 @@ a:hover {
 <section class="section" aria-labelledby="rationale-title">
 <h2 id="rationale-title">Rationale</h2>
 <ul class="rationale-list">
-  <li>Bucket percentiles are used instead of raw bucket scores because absolute scores scale strongly with bucket size.</li>
-  <li>Raw percentage-contribution petals look very similar across patients, so they are poor at showing patient-specific differences.</li>
-  <li>The legend sits outside the plot so bucket names and percentile values can stay on one line without covering the petals.</li>
-  <li>Bucket colours stay within each score family, using the same ramps as the contribution examples for consistency.</li>
+  <li>Bucket wedges span their score petal's radius and take an angular slice of the quadrant, so a bucket is contained within its TME score petal by construction and can never draw outside it.</li>
+  <li>Wedge width is the bucket's share of the score total, so the buckets in a quadrant sum to exactly 100%. Displayed percentages use largest-remainder rounding so they never print 99% or 101%.</li>
+  <li>Bucket percentile to baseline is no longer encoded by petal size or repeated as another score number. It is shown as a small baseline bar with a tick at the 50th percentile, which separates "how much of the score is this bucket" from "how does this bucket compare with the baseline cohort".</li>
+  <li>Share inputs are held in one place per bucket, so bucket-level normalised values can replace the raw bucket scores without any change to the geometry.</li>
+  <li>Bucket percentiles are used instead of raw bucket scores for the baseline comparison because absolute scores scale strongly with bucket size.</li>
+  <li>Raw percentage-contribution shares look very similar across patients, so they are poor at showing patient-specific differences.</li>
+  <li>The legend sits outside the plot so bucket names, share values and baseline bars can stay aligned without covering the petals.</li>
 </ul>
-<p class="inline-link"><a href="pages/score-size-bias.html">Open the evidence page with scatterplot and raw-contribution examples</a></p>
+</section>
+
+<section class="section" aria-labelledby="explorer-title">
+<h2 id="explorer-title">Gene Set Explorer</h2>
+<ul class="link-list">
+  <li>
+    <a href="pages/gene-set-explorer.html">Explore bucket genes</a>
+    <span>Filter the mapped gene sets by TME score, bucket and subbucket, then drill into the genes behind each labelled pathway group.</span>
+  </li>
+</ul>
 </section>
 
 <section class="section" aria-labelledby="archive-title">
 <h2 id="archive-title">Archive</h2>
 <ul class="link-list">
+  <li>
+    <a href="pages/score-size-bias.html">Archived rationale: bucket size bias</a>
+    <span>Thought process that led away from raw bucket scores and raw contribution petals, including the bucket-size scatterplot and comparison examples.</span>
+  </li>
   <li>
     <a href="pages/score-blob-summary.html">Score blob summary</a>
     <span>Archived alternate view: four score blobs over a low-opacity tumour silhouette.</span>
@@ -230,60 +302,92 @@ a:hover {
 </section>
 </main>
 <script>
+// Surface any script failure in the page itself. A silent exception used to leave
+// an empty plot area with no clue as to why.
+window.addEventListener('error', function (event) {
+  var box = document.getElementById('loadError');
+  if (!box) return;
+  box.hidden = false;
+  box.innerHTML = '<strong>The plot failed to draw.</strong> ' +
+    String(event.message || event.error || 'Unknown error') +
+    (event.filename ? ' (' + event.filename + ':' + event.lineno + ')' : '');
+});
+</script>
+<script src="data/outputs/patient_petals.js"></script>
+<script>
+// Axis order and colours must match the schema emitted by scripts/build_patient_petals.py.
+// The values below are an RHF1545 snapshot, used only if the generated data file is
+// missing; selecting a patient overwrites score, v and pct on every axis.
+//
+// v is the share input. Swap in bucket-level normalised values here and in the
+// generator; the plot only ever renders 100 * v / sum(v), so the shares total 100%
+// whatever v is. pct is the percentile vs the baseline cohort and drives the legend
+// bullet only - it never feeds the geometry.
 const axes = [
   {
     name:'Angiogenesis',
     color:'#378ADD',
     palette:['#378add','#499cef','#5baeff'],
-    score:72,
+    score:90,
     buckets:[
-      {name:'Angiogenic Signalling', percentile:74, subBuckets:14, nGenes:676},
-      {name:'Endothelial Cell Signature', percentile:68, subBuckets:14, nGenes:565},
-      {name:'Hypoxia Signalling', percentile:79, subBuckets:7, nGenes:298}
+      {name:'Angiogenic Signalling', v:4.292, pct:89},
+      {name:'Endothelial Cell Signature', v:4.7887, pct:91},
+      {name:'Hypoxia Signalling', v:2.323, pct:74}
     ]
   },
   {
     name:'Immunogenicity',
     color:'#0F6E56',
     palette:['#0f6e56','#218068','#33927a','#45a48c'],
-    score:91,
+    score:34,
     buckets:[
-      {name:'Antigen Presentation', percentile:93, subBuckets:7, nGenes:209},
-      {name:'Inflammation', percentile:88, subBuckets:13, nGenes:164},
-      {name:'Innate Immune Activation', percentile:95, subBuckets:13, nGenes:334},
-      {name:'TME/Stroma', percentile:76, subBuckets:8, nGenes:204}
+      {name:'Antigen Presentation', v:1.6145, pct:16},
+      {name:'Inflammation', v:3.7027, pct:49},
+      {name:'Innate Immune Activation', v:3.6316, pct:34},
+      {name:'TME/Stroma', v:2.4265, pct:49}
     ]
   },
   {
     name:'Fibrosis',
     color:'#993C1D',
     palette:['#993c1d','#ab4e2f','#bd6041','#cf7253'],
-    score:86,
+    score:95,
     buckets:[
-      {name:'Cell-Matrix Adhesion', percentile:84, subBuckets:8, nGenes:266},
-      {name:'ECM Remodelling', percentile:90, subBuckets:7, nGenes:391},
-      {name:'Fibroblast Signature', percentile:72, subBuckets:4, nGenes:220},
-      {name:'Pro-Fibrotic Signalling', percentile:87, subBuckets:16, nGenes:790}
+      {name:'Cell-Matrix Adhesion', v:2.7908, pct:90},
+      {name:'ECM Remodelling', v:2.5545, pct:99},
+      {name:'Fibroblast Signature', v:1.7668, pct:91},
+      {name:'Pro-Fibrotic Signalling', v:4.5831, pct:92}
     ]
   },
   {
     name:'EMT',
     color:'#993556',
     palette:['#993556','#ab4768','#bd597a','#cf6b8c'],
-    score:38,
+    score:78,
     buckets:[
-      {name:'EMT Initiation', percentile:32, subBuckets:13, nGenes:625},
-      {name:'EMT Maintenance', percentile:43, subBuckets:18, nGenes:776},
-      {name:'Epithelial Markers', percentile:28, subBuckets:4, nGenes:174},
-      {name:'Mesenchymal Markers', percentile:49, subBuckets:8, nGenes:348}
+      {name:'EMT Initiation', v:3.6252, pct:82},
+      {name:'EMT Maintenance', v:4.7631, pct:57},
+      {name:'Epithelial Markers', v:1.3684, pct:15},
+      {name:'Mesenchymal Markers', v:3.1008, pct:98}
     ]
   }
 ];
-const cx=520, cy=350, baseR=86, extraR=158, coreR=32, axisGap=5;
+const cohort = window.PATIENT_PETALS || null;
+const BASELINE_LABEL = cohort
+  ? cohort.baselineLabel + ' (n = ' + cohort.cohortSize + ')'
+  : 'baseline cohort';
+const V_MAX = cohort ? cohort.vMax : 8;
+const cx=630, cy=300, baseR=86, extraR=158, coreR=32, axisGap=5;
+// Bucket wedges stop short of the axis envelope so the score petal keeps a visible rim.
+const BUCKET_INSET=0.94;
+// Literal hex rather than var(--...) so the SVG also renders correctly when exported
+// standalone, outside the page's :root custom properties.
+const RULE_COLOR='#d9d1c4';
+const CORE_FILL='#fffdf8';
+const WEDGE_STROKE='#f0ebe2';
 function shade(hex,amt){const n=parseInt(hex.slice(1),16);let r=(n>>16)+amt,g=(n>>8&255)+amt,b=(n&255)+amt;r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));return '#'+(1<<24|r<<16|g<<8|b).toString(16).slice(1);}
 function bucketFill(axis, bucketIndex){return axis.palette[bucketIndex % axis.palette.length];}
 function targetR(i){return baseR+(axes[i].score/100)*extraR;}
-function smooth(t){return t*t*(3-2*t);}
 function maxRForAxis(axisIndex, angle){
   const a=((angle%360)+360)%360;
   const start=-90+axisIndex*90+axisGap;
@@ -294,66 +398,71 @@ function maxRForAxis(axisIndex, angle){
   r += 7*Math.sin(a*0.09)+4*Math.sin(a*0.21+1.3);
   return Math.max(30,r);
 }
-function maxRForBucket(axisIndex, bucket, angle){
-  const a=((angle%360)+360)%360;
-  const start=-90+axisIndex*90+axisGap;
-  const end=-90+(axisIndex+1)*90-axisGap;
-  const t=(angle-start)/(end-start);
-  const middleLift=0.84+0.16*Math.sin(Math.PI*t);
-  let r = (baseR+(bucket.percentile/100)*extraR)*middleLift;
-  r += 7*Math.sin(a*0.09)+4*Math.sin(a*0.21+1.3);
-  return Math.max(30,r);
-}
 function pt(r,angleDeg){const rad=angleDeg*Math.PI/180;return [cx+r*Math.cos(rad),cy+r*Math.sin(rad)];}
-function textLines(text, maxChars=24){
-  const words=text.split(' ');
-  const lines=[];
-  let line='';
-  words.forEach(word=>{
-    const next=line ? line+' '+word : word;
-    if(next.length>maxChars && line){
-      lines.push(line);
-      line=word;
-    } else {
-      line=next;
-    }
-  });
-  if(line) lines.push(line);
-  return lines;
+// Round shares so the displayed integers sum to exactly `total`. Independent rounding
+// can print 33/33/33 = 99 or 34/33/34 = 101, which is the property the plot guarantees.
+// Mirrors largest_remainder() in scripts/build_patient_petals.py.
+function largestRemainder(values, total=100){
+  const weight=values.reduce((s,v)=>s+v,0);
+  if(weight<=0) return values.map(()=>0);
+  const exact=values.map(v=>v/weight*total);
+  const floors=exact.map(x=>Math.floor(x));
+  let remainder=total-floors.reduce((s,v)=>s+v,0);
+  const order=exact.map((x,i)=>i).sort((a,b)=>(exact[b]-floors[b])-(exact[a]-floors[a]));
+  for(let k=0;k<remainder;k++) floors[order[k]]+=1;
+  return floors;
 }
-function addTextBlock(x, y, lines, options={}){
-  const anchor=options.anchor || 'start';
-  const size=options.size || 12;
-  const weight=options.weight || 500;
-  const color=options.color || '#2a2a2a';
-  const leading=options.leading || size+4;
-  let out='<text x="'+x+'" y="'+y+'" text-anchor="'+anchor+'" fill="'+color+'" font-size="'+size+'" font-weight="'+weight+'">';
-  lines.forEach((line,i)=>{
-    out+='<tspan x="'+x+'" dy="'+(i===0?0:leading)+'">'+line+'</tspan>';
-  });
-  return out+'</text>';
+function axisShares(axis){
+  const values=axis.buckets.map(b=>Math.max(0,b.v));
+  const weight=values.reduce((s,v)=>s+v,0);
+  if(weight<=0) return null;
+  return {fractions:values.map(v=>v/weight), display:largestRemainder(values)};
+}
+const BULLET_W=70;
+function bulletStrip(x, y, percentile, color){
+  const w=BULLET_W, h=6, top=y-5;
+  const fill=Math.max(0,Math.min(100,percentile))/100*w;
+  let out='';
+  out+='<rect x="'+x+'" y="'+top+'" width="'+w+'" height="'+h+'" rx="3" fill="'+shade(color,96)+'" opacity="0.5"></rect>';
+  out+='<rect x="'+x+'" y="'+top+'" width="'+fill.toFixed(1)+'" height="'+h+'" rx="3" fill="'+color+'"></rect>';
+  out+='<line x1="'+(x+w/2)+'" y1="'+(top-2)+'" x2="'+(x+w/2)+'" y2="'+(top+h+2)+'" stroke="#5f5d59" stroke-width="1"></line>';
+  return out;
 }
 function renderQuadrantLabels(){
+  // Blocks are ordered to match the quadrant each axis is drawn in: Angiogenesis
+  // upper right, Immunogenicity lower right, Fibrosis lower left, EMT upper left.
   const labelBlocks=[
-    {x:755,y:72,width:235},
-    {x:755,y:480,width:235},
-    {x:50,y:480,width:235},
-    {x:50,y:72,width:235}
+    {x:898,y:112,width:330},
+    {x:898,y:404,width:330},
+    {x:32,y:404,width:330},
+    {x:32,y:112,width:330}
   ];
+  const nameX=14, shareX=220, barX=254;
   let svg='';
   axes.forEach((ax,i)=>{
     const pos=labelBlocks[i];
-    svg+='<line x1="'+pos.x+'" y1="'+(pos.y+9)+'" x2="'+(pos.x+pos.width)+'" y2="'+(pos.y+9)+'" stroke="'+ax.color+'" stroke-width="1.4" opacity="0.58"></line>';
+    const shares=axisShares(ax);
     svg+='<text x="'+pos.x+'" y="'+pos.y+'" fill="#202020" font-size="14" font-weight="800">'+ax.name+'</text>';
-    svg+='<text id="axisScore-'+i+'" x="'+(pos.x+pos.width)+'" y="'+pos.y+'" text-anchor="end" fill="'+ax.color+'" font-size="15" font-weight="800">'+ax.score+'</text>';
+    svg+='<text x="'+(pos.x+pos.width)+'" y="'+pos.y+'" text-anchor="end" fill="'+ax.color+'" font-size="15" font-weight="800">'+ax.score+'</text>';
+    svg+='<line x1="'+pos.x+'" y1="'+(pos.y+9)+'" x2="'+(pos.x+pos.width)+'" y2="'+(pos.y+9)+'" stroke="'+ax.color+'" stroke-width="1.4" opacity="0.58"></line>';
+    const guideY=pos.y+27;
+    svg+='<text x="'+(pos.x+nameX)+'" y="'+guideY+'" fill="#5f5d59" font-size="8.6" font-weight="800" letter-spacing="0.05em">BUCKET</text>';
+    svg+='<text x="'+(pos.x+shareX)+'" y="'+guideY+'" text-anchor="end" fill="#5f5d59" font-size="8.6" font-weight="800" letter-spacing="0.05em">SHARE OF SCORE</text>';
+    svg+='<text x="'+(pos.x+barX)+'" y="'+guideY+'" fill="#5f5d59" font-size="8.6" font-weight="800" letter-spacing="0.05em">VS BASELINE</text>';
     ax.buckets.forEach((bucket,j)=>{
       const fill=bucketFill(ax,j);
-      const y=pos.y+30+j*22;
+      const y=pos.y+52+j*20;
+      const share=shares ? shares.display[j]+'%' : '--';
       svg+='<rect x="'+pos.x+'" y="'+(y-8)+'" width="9" height="9" rx="2" fill="'+fill+'"></rect>';
-      svg+='<text x="'+(pos.x+15)+'" y="'+y+'" fill="#2f2f2f" font-size="9.6" font-weight="650">'+bucket.name+'</text>';
-      svg+='<text x="'+(pos.x+pos.width)+'" y="'+y+'" text-anchor="end" fill="'+fill+'" font-size="10.5" font-weight="800">'+bucket.percentile+'</text>';
+      // Shrink long names rather than let them run into the share column. The 0.66
+      // em-per-character estimate is deliberately wide so it holds for fallback fonts too.
+      const nameSize=Math.min(9.6,(shareX-22)/(bucket.name.length*0.66));
+      svg+='<text x="'+(pos.x+nameX)+'" y="'+y+'" fill="#2f2f2f" font-size="'+nameSize.toFixed(2)+'" font-weight="650">'+bucket.name+'</text>';
+      svg+='<text x="'+(pos.x+shareX)+'" y="'+y+'" text-anchor="end" fill="#1f1f1f" font-size="10.5" font-weight="800">'+share+'</text>';
+      svg+=bulletStrip(pos.x+barX, y, bucket.pct, fill);
     });
   });
+  svg+='<text x="'+cx+'" y="586" text-anchor="middle" fill="#5f5d59" font-size="11">Bucket rows use two result columns: share of score, and baseline percentile vs '+BASELINE_LABEL+'; the line marks the cohort median.</text>';
   return svg;
 }
 function render(){
@@ -361,7 +470,8 @@ function render(){
   axes.forEach((ax,i)=>{
     const start=-90+i*90+axisGap, end=-90+(i+1)*90-axisGap;
     const bucketGap=1.6;
-    const bucketAngle=(end-start-(ax.buckets.length-1)*bucketGap)/ax.buckets.length;
+    const available=(end-start)-(ax.buckets.length-1)*bucketGap;
+    const shares=axisShares(ax);
     const bgFill=shade(ax.color,62);
     let bg='';
     const bgSteps=24;
@@ -377,16 +487,22 @@ function render(){
       bg+='L'+x.toFixed(1)+' '+y.toFixed(1)+' ';
     }
     bg+='Z';
-    svg+='<path d="'+bg+'" fill="'+bgFill+'" opacity="0.16" stroke="none"><title>'+ax.name+' axis backdrop (percentile '+ax.score+')</title></path>';
+    svg+='<path d="'+bg+'" fill="'+bgFill+'" opacity="0.2" stroke="'+ax.color+'" stroke-width="1.1" stroke-opacity="0.45"><title>'+ax.name+' score petal (percentile '+ax.score+')</title></path>';
+    let cursor=start;
     ax.buckets.forEach((b,j)=>{
-      const bStart=start+j*(bucketAngle+bucketGap);
-      const bEnd=bStart+bucketAngle;
+      // No share data: fall back to equal widths so the quadrant still reads.
+      const fraction=shares ? shares.fractions[j] : 1/ax.buckets.length;
+      const sweep=available*fraction;
+      const bStart=cursor;
+      const bEnd=bStart+sweep;
+      cursor=bEnd+bucketGap;
+      if(sweep<=0.05) return;
       const fill=bucketFill(ax,j);
-      let d='';
       const steps=16;
+      let d='';
       for(let s=0;s<=steps;s++){
         const ang=bStart+(bEnd-bStart)*s/steps;
-        const r=maxRForBucket(i,b,ang);
+        const r=maxRForAxis(i,ang)*BUCKET_INSET;
         const [x,y]=pt(r,ang);
         d+= (s===0?'M':'L')+x.toFixed(1)+' '+y.toFixed(1)+' ';
       }
@@ -396,35 +512,97 @@ function render(){
         d+='L'+x.toFixed(1)+' '+y.toFixed(1)+' ';
       }
       d+='Z';
-      svg+='<path d="'+d+'" fill="'+fill+'" stroke="var(--surface-2)" stroke-width="0.7"><title>'+ax.name+' - '+b.name+' (percentile '+b.percentile+', '+b.subBuckets+' sub-buckets, '+b.nGenes+' genes)</title></path>';
+      const share=shares ? shares.display[j] : null;
+      const shareText=share===null ? 'no share data' : share+'% of '+ax.name;
+      svg+='<path d="'+d+'" fill="'+fill+'" fill-opacity="'+(shares?1:0.35)+'" stroke="'+WEDGE_STROKE+'" stroke-width="0.7"><title>'+ax.name+' - '+b.name+' ('+shareText+', percentile '+b.pct+' vs '+BASELINE_LABEL+')</title></path>';
     });
   });
-  svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+coreR+'" fill="var(--surface-1)" stroke="var(--border)" stroke-width="0.5"/>';
+  svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+coreR+'" fill="'+CORE_FILL+'" stroke="'+RULE_COLOR+'" stroke-width="0.5"/>';
   svg+=renderQuadrantLabels();
   document.getElementById('tumour').innerHTML=svg;
 }
-function updateBucketPercentile(axisIndex, bucketIndex, value){
-  axes[axisIndex].buckets[bucketIndex].percentile=+value;
-  document.getElementById('bucketPercentile-'+axisIndex+'-'+bucketIndex).textContent=value;
+function markCustom(){
+  const picker=document.getElementById('patient');
+  if(picker.value!=='custom'){
+    picker.value='custom';
+    updatePatientNote();
+  }
+}
+function updateBucketValue(axisIndex, bucketIndex, value){
+  axes[axisIndex].buckets[bucketIndex].v=+value;
+  document.getElementById('bucketValue-'+axisIndex+'-'+bucketIndex).textContent=(+value).toFixed(2);
+  markCustom();
   render();
 }
 function updateAxisScore(axisIndex, value){
   axes[axisIndex].score=+value;
+  markCustom();
   render();
+}
+function syncControls(){
+  axes.forEach((ax,i)=>{
+    document.getElementById('axisScoreInput-'+i).value=ax.score;
+    ax.buckets.forEach((b,j)=>{
+      document.getElementById('bucketInput-'+i+'-'+j).value=b.v;
+      document.getElementById('bucketValue-'+i+'-'+j).textContent=b.v.toFixed(2);
+    });
+  });
+}
+function applyPatient(patientIndex){
+  const patient=cohort.patients[patientIndex];
+  patient.axes.forEach((data,i)=>{
+    axes[i].score=data.pct;
+    axes[i].buckets.forEach((bucket,j)=>{
+      bucket.v=data.v[j];
+      bucket.pct=data.bucketPct[j];
+    });
+  });
+  syncControls();
+  render();
+}
+function updatePatientNote(){
+  const picker=document.getElementById('patient');
+  const note=document.getElementById('patientNote');
+  if(picker.value==='custom'){
+    note.textContent='Custom values. Percentiles vs '+BASELINE_LABEL+'.';
+    return;
+  }
+  const patient=cohort.patients[+picker.value];
+  note.textContent=patient.response+' - percentiles vs '+BASELINE_LABEL+'.';
 }
 let scoreHtml='<div class="control-title">Axis percentile scores</div>';
 axes.forEach((ax,i)=>{
-  scoreHtml+='<div class="control-row score-row"><span>'+ax.name+'</span><input type="range" min="0" max="100" value="'+ax.score+'" oninput="updateAxisScore('+i+',this.value)"></div>';
+  scoreHtml+='<div class="control-row score-row"><span>'+ax.name+'</span><input id="axisScoreInput-'+i+'" type="range" min="0" max="100" value="'+ax.score+'" oninput="updateAxisScore('+i+',this.value)"></div>';
 });
 document.getElementById('scoreControls').innerHTML=scoreHtml;
-let bucketHtml='<div class="control-title" style="margin-top:12px">Bucket percentile scores</div>';
+let bucketHtml='';
 axes.forEach((ax,i)=>{
   ax.buckets.forEach((b,j)=>{
-    bucketHtml+='<div class="control-row"><span>'+ax.name+': '+b.name+' (<span id="bucketPercentile-'+i+'-'+j+'">'+b.percentile+'</span>)</span><input type="range" min="0" max="100" value="'+b.percentile+'" oninput="updateBucketPercentile('+i+','+j+',this.value)"></div>';
+    bucketHtml+='<div class="control-row"><span>'+ax.name+': '+b.name+' (<span id="bucketValue-'+i+'-'+j+'">'+b.v.toFixed(2)+'</span>)</span><input id="bucketInput-'+i+'-'+j+'" type="range" min="0" max="'+V_MAX+'" step="0.01" value="'+b.v+'" oninput="updateBucketValue('+i+','+j+',this.value)"></div>';
   });
 });
 document.getElementById('bucketControls').innerHTML=bucketHtml;
-render();
+const picker=document.getElementById('patient');
+if(cohort){
+  picker.innerHTML=cohort.patients
+    .map((p,i)=>'<option value="'+i+'">'+p.id+' ('+p.response+')</option>')
+    .join('')+'<option value="custom">Custom</option>';
+  picker.addEventListener('change',()=>{
+    if(picker.value!=='custom') applyPatient(+picker.value);
+    updatePatientNote();
+  });
+  applyPatient(0);
+  updatePatientNote();
+} else {
+  picker.innerHTML='<option value="custom">Custom</option>';
+  document.getElementById('patientNote').textContent='Patient data file not loaded; showing example values.';
+  const box=document.getElementById('loadError');
+  box.hidden=false;
+  box.innerHTML='<strong>Patient data not loaded.</strong> '+
+    'data/outputs/patient_petals.js did not load, so the plot is showing built-in example values. '+
+    'Run <code>pixi run build-data</code>, then reload.';
+  render();
+}
 </script>
 </body>
 </html>

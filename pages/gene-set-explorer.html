@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TME Gene Set Explorer</title>
+<style>
+:root {
+  --background: #f8f6f1;
+  --surface-1: #fffdf8;
+  --surface-2: #f0ebe2;
+  --text-primary: #222222;
+  --text-secondary: #5f5d59;
+  --border: #d9d1c4;
+  --blue: #2f6791;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+main {
+  width: min(1240px, calc(100vw - 32px));
+  margin: 36px auto 56px;
+}
+h1 {
+  margin: 0 0 8px;
+  font-size: clamp(30px, 4.5vw, 50px);
+  line-height: 1;
+}
+.dek {
+  max-width: 920px;
+  margin: 0 0 24px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.45;
+}
+.page-links {
+  margin-bottom: 18px;
+  font-size: 13px;
+}
+a {
+  color: var(--blue);
+  font-weight: 750;
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+.filter-band {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(170px, 1fr));
+  gap: 12px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+  margin-bottom: 18px;
+}
+.field label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+select,
+input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+  padding: 8px 9px;
+}
+.summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.metric {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+.metric span {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.metric strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 24px;
+  line-height: 1;
+}
+.section {
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+  margin-top: 20px;
+}
+.section h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+.section-note {
+  margin: 0 0 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.table-wrap {
+  overflow-x: auto;
+  border-top: 1px solid var(--border);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 12px;
+}
+th,
+td {
+  border-bottom: 1px solid #e6ddd0;
+  padding: 9px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+tbody tr:hover {
+  background: rgba(255, 253, 248, 0.72);
+}
+.gene {
+  font-weight: 850;
+  letter-spacing: 0.02em;
+}
+.muted {
+  color: var(--text-secondary);
+}
+.notice {
+  border-left: 4px solid #c98b74;
+  background: #fdf1ec;
+  color: #7c2d12;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+@media (max-width: 840px) {
+  main { margin: 24px auto 44px; }
+  .filter-band,
+  .summary { grid-template-columns: 1fr; }
+  table { min-width: 820px; }
+}
+</style>
+</head>
+<body>
+<main>
+<p class="page-links"><a href="../index.html">Back to petal plot</a></p>
+<h1>TME Gene Set Explorer</h1>
+<p class="dek">Explore the gene-set structure behind the four TME scores. Filter from score to bucket to subbucket, or search for a gene symbol, pathway term, score or bucket.</p>
+
+<section class="filter-band" aria-label="Gene set filters">
+  <div class="field">
+    <label for="scoreFilter">Score</label>
+    <select id="scoreFilter"></select>
+  </div>
+  <div class="field">
+    <label for="bucketFilter">Bucket</label>
+    <select id="bucketFilter"></select>
+  </div>
+  <div class="field">
+    <label for="subbucketFilter">Subbucket</label>
+    <select id="subbucketFilter"></select>
+  </div>
+  <div class="field">
+    <label for="searchFilter">Search</label>
+    <input id="searchFilter" type="search" placeholder="Gene, bucket, pathway...">
+  </div>
+</section>
+
+<div class="summary" aria-label="Filtered result summary">
+  <div class="metric"><span>Genes</span><strong id="geneCount">0</strong></div>
+  <div class="metric"><span>Subbuckets</span><strong id="subbucketCount">0</strong></div>
+  <div class="metric"><span>Buckets</span><strong id="bucketCount">0</strong></div>
+  <div class="metric"><span>Scores</span><strong id="scoreCount">0</strong></div>
+</div>
+
+<section class="section" aria-labelledby="subbucket-title">
+  <h2 id="subbucket-title">Subbucket Summary</h2>
+  <p class="section-note">One row per labelled subbucket after the current filters. Use this to understand the pathway groupings before drilling into genes.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 13%">Score</th>
+          <th style="width: 20%">Bucket</th>
+          <th>Subbucket</th>
+          <th style="width: 11%">Genes</th>
+        </tr>
+      </thead>
+      <tbody id="subbucketBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="gene-title">
+  <h2 id="gene-title">Genes</h2>
+  <p class="section-note" id="geneNote">Showing matching genes.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 12%">Gene</th>
+          <th style="width: 13%">Score</th>
+          <th style="width: 19%">Bucket</th>
+          <th>Subbucket</th>
+        </tr>
+      </thead>
+      <tbody id="geneBody"></tbody>
+    </table>
+  </div>
+</section>
+</main>
+
+<script>
+const GENE_CSV = '../data/outputs/tme_gene_bucket_mapping.csv';
+const SUBBUCKET_CSV = '../data/outputs/tme_subbucket_mapping.csv';
+const MAX_GENE_ROWS = 700;
+let genes = [];
+let subbuckets = [];
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let field = '';
+  let quote = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    const next = text[i + 1];
+    if (quote) {
+      if (c === '"' && next === '"') {
+        field += '"';
+        i++;
+      } else if (c === '"') {
+        quote = false;
+      } else {
+        field += c;
+      }
+    } else if (c === '"') {
+      quote = true;
+    } else if (c === ',') {
+      row.push(field);
+      field = '';
+    } else if (c === '\n') {
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = '';
+    } else if (c !== '\r') {
+      field += c;
+    }
+  }
+  if (field || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+  const header = rows.shift();
+  return rows.filter(r => r.length === header.length).map(r => Object.fromEntries(header.map((h, i) => [h, r[i]])));
+}
+
+function uniq(values) {
+  return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
+function optionHtml(values, allLabel) {
+  return '<option value="">' + allLabel + '</option>' +
+    values.map(v => '<option value="' + escapeAttr(v) + '">' + escapeHtml(v) + '</option>').join('');
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
+}
+
+function currentFilters() {
+  return {
+    score: document.getElementById('scoreFilter').value,
+    bucket: document.getElementById('bucketFilter').value,
+    subbucket: document.getElementById('subbucketFilter').value,
+    search: document.getElementById('searchFilter').value.trim().toLowerCase()
+  };
+}
+
+function matches(row, filters) {
+  if (filters.score && row.score !== filters.score) return false;
+  if (filters.bucket && row.bucket !== filters.bucket) return false;
+  if (filters.subbucket && row.sub_bucket_label !== filters.subbucket) return false;
+  if (!filters.search) return true;
+  return [
+    row.gene,
+    row.score,
+    row.bucket,
+    row.sub_bucket_label
+  ].some(v => String(v || '').toLowerCase().includes(filters.search));
+}
+
+function filteredGenes() {
+  const filters = currentFilters();
+  return genes.filter(row => matches(row, filters));
+}
+
+function filteredSubbuckets() {
+  const filters = currentFilters();
+  return subbuckets.filter(row => matches(row, filters));
+}
+
+function syncFilterOptions(changedId) {
+  const scoreFilter = document.getElementById('scoreFilter');
+  const bucketFilter = document.getElementById('bucketFilter');
+  const subbucketFilter = document.getElementById('subbucketFilter');
+
+  if (changedId === 'scoreFilter') {
+    bucketFilter.value = '';
+    subbucketFilter.value = '';
+  } else if (changedId === 'bucketFilter') {
+    subbucketFilter.value = '';
+  }
+
+  const bucket = bucketFilter.value;
+  const subbucket = subbucketFilter.value;
+  const activeScore = scoreFilter.value;
+  const bucketRows = activeScore ? genes.filter(r => r.score === activeScore) : genes;
+  const activeBucket = bucketFilter.value;
+  const subbucketRows = bucketRows.filter(r => !activeBucket || r.bucket === activeBucket);
+
+  const bucketOptions = uniq(bucketRows.map(r => r.bucket));
+  const subbucketOptions = uniq(subbucketRows.map(r => r.sub_bucket_label));
+  bucketFilter.innerHTML = optionHtml(uniq(bucketRows.map(r => r.bucket)), 'All buckets');
+  subbucketFilter.innerHTML = optionHtml(uniq(subbucketRows.map(r => r.sub_bucket_label)), 'All subbuckets');
+  if (bucketOptions.includes(bucket)) bucketFilter.value = bucket;
+  if (subbucketOptions.includes(subbucket)) subbucketFilter.value = subbucket;
+}
+
+function render() {
+  const matchingGenes = filteredGenes();
+  const matchingSubbucketIds = new Set(matchingGenes.map(r => r.sub_bucket_id));
+  const matchingSubbuckets = subbuckets.filter(row => matchingSubbucketIds.has(row.sub_bucket_id));
+  document.getElementById('geneCount').textContent = new Set(matchingGenes.map(r => r.gene)).size.toLocaleString();
+  document.getElementById('subbucketCount').textContent = new Set(matchingGenes.map(r => r.sub_bucket_id)).size.toLocaleString();
+  document.getElementById('bucketCount').textContent = new Set(matchingGenes.map(r => r.bucket)).size.toLocaleString();
+  document.getElementById('scoreCount').textContent = new Set(matchingGenes.map(r => r.score)).size.toLocaleString();
+
+  document.getElementById('subbucketBody').innerHTML = matchingSubbuckets.map(row => (
+    '<tr>' +
+      '<td>' + escapeHtml(row.score) + '</td>' +
+      '<td>' + escapeHtml(row.bucket) + '</td>' +
+      '<td><strong>' + escapeHtml(row.sub_bucket_label) + '</strong><div class="muted">' + escapeHtml(row.sub_bucket_id) + '</div></td>' +
+      '<td>' + escapeHtml(row.n_genes || row.n_label_genes || '-') + '</td>' +
+    '</tr>'
+  )).join('') || '<tr><td colspan="4" class="muted">No matching subbuckets.</td></tr>';
+
+  const visibleGenes = matchingGenes.slice(0, MAX_GENE_ROWS);
+  document.getElementById('geneNote').textContent = matchingGenes.length > MAX_GENE_ROWS
+    ? 'Showing the first ' + MAX_GENE_ROWS.toLocaleString() + ' of ' + matchingGenes.length.toLocaleString() + ' matching genes. Narrow the filters or search for a gene to reduce the table.'
+    : 'Showing ' + matchingGenes.length.toLocaleString() + ' matching genes.';
+  document.getElementById('geneBody').innerHTML = visibleGenes.map(row => (
+    '<tr>' +
+      '<td class="gene">' + escapeHtml(row.gene) + '</td>' +
+      '<td>' + escapeHtml(row.score) + '</td>' +
+      '<td>' + escapeHtml(row.bucket) + '</td>' +
+      '<td><strong>' + escapeHtml(row.sub_bucket_label) + '</strong><div class="muted">' + escapeHtml(row.sub_bucket_id) + '</div></td>' +
+    '</tr>'
+  )).join('') || '<tr><td colspan="4" class="muted">No matching genes.</td></tr>';
+}
+
+function attachFilters() {
+  ['scoreFilter', 'bucketFilter', 'subbucketFilter', 'searchFilter'].forEach(id => {
+    document.getElementById(id).addEventListener(id === 'searchFilter' ? 'input' : 'change', () => {
+      if (id !== 'searchFilter') syncFilterOptions(id);
+      render();
+    });
+  });
+}
+
+async function init() {
+  try {
+    const [geneText, subbucketText] = await Promise.all([
+      fetch(GENE_CSV).then(r => {
+        if (!r.ok) throw new Error(GENE_CSV + ' returned ' + r.status);
+        return r.text();
+      }),
+      fetch(SUBBUCKET_CSV).then(r => {
+        if (!r.ok) throw new Error(SUBBUCKET_CSV + ' returned ' + r.status);
+        return r.text();
+      })
+    ]);
+    genes = parseCsv(geneText);
+    subbuckets = parseCsv(subbucketText);
+    document.getElementById('scoreFilter').innerHTML = optionHtml(uniq(genes.map(r => r.score)), 'All scores');
+    syncFilterOptions('');
+    attachFilters();
+    render();
+  } catch (error) {
+    document.querySelector('main').insertAdjacentHTML(
+      'beforeend',
+      '<p class="notice"><strong>Gene set data could not be loaded.</strong> ' +
+      escapeHtml(error.message || error) +
+      '. Open this page through the local server with <code>./view_tme_visual.sh</code>.</p>'
+    );
+  }
+}
+
+init();
+</script>
+</body>
+</html>

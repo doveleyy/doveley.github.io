@@ -12,5 +12,9 @@
 __pycache__/
 *.py[cod]
 
+# Optional figure exports from local check/render helpers
+build/
+
 # Large local-only source material
 local/
+*.pptx

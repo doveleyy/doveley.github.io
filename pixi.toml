@@ -6,6 +6,7 @@ version = "0.1.0"
 
 [tasks]
 view = "./view_tme_visual.sh"
+build-data = "python scripts/build_patient_petals.py"
 
 [dependencies]
 python = ">=3.14.6,<3.15"
