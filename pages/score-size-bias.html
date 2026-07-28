@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TME Score Size Bias Scatter</title>
+<style>
+:root {
+  --background: #f8f6f1;
+  --surface-1: #fffdf8;
+  --text-primary: #222222;
+  --text-secondary: #5f5d59;
+  --border: #d9d1c4;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+main {
+  width: min(1180px, calc(100vw - 32px));
+  margin: 36px auto;
+}
+h1 {
+  margin: 0 0 8px;
+  font-size: clamp(30px, 4.8vw, 52px);
+  line-height: 1;
+}
+.dek {
+  max-width: 920px;
+  margin: 0 0 24px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.45;
+}
+.panel {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+}
+#scatter {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.note-grid {
+  display: block;
+  margin-top: 18px;
+}
+.note {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.note strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+.takeaway-list {
+  margin: 0;
+  padding-left: 18px;
+}
+.takeaway-list li {
+  margin: 6px 0;
+}
+.example-section {
+  margin-top: 18px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+.example-section h2 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  line-height: 1.15;
+}
+.example-section p {
+  margin: 0 0 14px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.example-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fffaf1;
+  padding: 12px;
+}
+.mini-petal {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+}
+.example-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.example-meta strong {
+  color: var(--text-primary);
+}
+.comparison {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 12px;
+}
+.comparison th,
+.comparison td {
+  padding: 7px 6px;
+  border-top: 1px solid #e6ddd0;
+  text-align: left;
+  vertical-align: top;
+}
+.comparison th {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 800;
+}
+.comparison td:first-child {
+  width: 34%;
+  color: var(--text-secondary);
+  font-weight: 800;
+}
+.comparison b {
+  color: #1f1f1f;
+}
+.bad-rank {
+  color: #9a3412;
+  font-weight: 800;
+}
+.good-rank {
+  color: #0f6e56;
+  font-weight: 800;
+}
+.ratio-summary {
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.35;
+}
+.ratio-summary b {
+  color: var(--text-primary);
+}
+.page-links {
+  margin-top: 22px;
+  font-size: 13px;
+}
+.page-links a {
+  color: #2f6791;
+  font-weight: 700;
+}
+@media (max-width: 760px) {
+  .example-grid {
+    grid-template-columns: 1fr;
+  }
+  .example-meta {
+    display: block;
+  }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Bucket Size Drives Absolute Scores</h1>
+<p class="dek">Each point is a mapped TME bucket. The y-axis is the mean absolute bucket score across the GC PD-1 harmonised cohort. Larger buckets tend to have larger absolute scores, which is why bucket percentiles are a cleaner visual encoding than raw absolute contribution.</p>
+<div class="panel">
+<svg id="scatter" viewBox="0 0 1080 680" role="img">
+  <title>Scatter plot showing bucket size bias in absolute TME scores</title>
+  <desc>Gene count and sub-bucket count are associated with mean absolute bucket score.</desc>
+</svg>
+<section class="example-section" aria-labelledby="patient-examples-title">
+  <h2 id="patient-examples-title">Raw contribution petals look nearly identical</h2>
+  <p>These mini petal plots use <code>bucket score / axis score</code> from <code>data/gc_pd1_harmonised.csv</code>. Because the contribution ratios mostly follow bucket size, different patients produce almost the same shape.</p>
+  <div class="example-grid">
+    <article class="example-card">
+      <div class="example-meta"><span><strong>RHF1545</strong> / NR</span><span>bucket / axis score</span></div>
+      <svg class="mini-petal" viewBox="0 0 220 220" role="img">
+        <title>Raw contribution petal plot for RHF1545</title>
+        <desc>Bucket petals sized by bucket score divided by axis score.</desc>
+        <rect width="220" height="220" rx="8" fill="#fffdf8"></rect>
+        <path d="M111.6 92.1 L117.3 27.1 Q137.6 23.8 152.3 38.3 L119.1 94.5 Z" fill="#378add" stroke="#f0ebe2" stroke-width="1"><title>Angio Angiogenic: 38% of axis score</title></path>
+        <path d="M119.6 94.8 L157.6 34.5 Q178.6 41.4 185.5 62.4 L125.2 100.4 Z" fill="#499cef" stroke="#f0ebe2" stroke-width="1"><title>Angio Endothelial: 42% of axis score</title></path>
+        <path d="M125.5 100.9 L158.3 81.5 Q168.0 91.4 165.8 105.1 L127.9 108.4 Z" fill="#5baeff" stroke="#f0ebe2" stroke-width="1"><title>Angio Hypoxia: 20% of axis score</title></path>
+        <path d="M127.9 111.6 L156.8 114.1 Q159.4 122.7 153.0 128.9 L126.5 117.2 Z" fill="#0f6e56" stroke="#f0ebe2" stroke-width="1"><title>Immuno Antigen: 14% of axis score</title></path>
+        <path d="M126.3 117.7 L178.4 142.5 Q177.6 156.9 164.3 162.7 L122.9 122.5 Z" fill="#218068" stroke="#f0ebe2" stroke-width="1"><title>Immuno Inflammation: 33% of axis score</title></path>
+        <path d="M122.5 122.9 L161.7 163.2 Q156.0 176.2 141.8 177.0 L117.7 126.3 Z" fill="#33927a" stroke="#f0ebe2" stroke-width="1"><title>Immuno Innate: 32% of axis score</title></path>
+        <path d="M117.2 126.5 L133.1 162.7 Q125.5 170.6 115.0 167.3 L111.6 127.9 Z" fill="#45a48c" stroke="#f0ebe2" stroke-width="1"><title>Immuno Stroma: 21% of axis score</title></path>
+        <path d="M108.4 127.9 L104.6 171.8 Q93.3 175.4 85.0 166.8 L102.8 126.5 Z" fill="#993c1d" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Cell-Matrix: 24% of axis score</title></path>
+        <path d="M102.3 126.3 L84.7 163.3 Q73.4 162.7 68.9 152.4 L97.5 122.9 Z" fill="#ab4e2f" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis ECM: 22% of axis score</title></path>
+        <path d="M97.1 122.5 L75.2 143.7 Q66.7 140.0 66.2 130.8 L93.7 117.7 Z" fill="#bd6041" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Fibroblast: 15% of axis score</title></path>
+        <path d="M93.5 117.2 L32.4 144.1 Q20.7 132.9 25.6 117.4 L92.1 111.6 Z" fill="#cf7253" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Pro-Fibrotic: 39% of axis score</title></path>
+        <path d="M92.1 108.4 L42.1 104.1 Q38.3 91.6 47.6 82.6 L93.5 102.8 Z" fill="#993556" stroke="#f0ebe2" stroke-width="1"><title>EMT Initiation: 28% of axis score</title></path>
+        <path d="M93.7 102.3 L36.2 74.9 Q37.0 59.3 51.4 53.1 L97.1 97.5 Z" fill="#ab4768" stroke="#f0ebe2" stroke-width="1"><title>EMT Maintenance: 37% of axis score</title></path>
+        <path d="M97.5 97.1 L80.5 79.6 Q83.7 72.1 91.8 71.7 L102.3 93.7 Z" fill="#bd597a" stroke="#f0ebe2" stroke-width="1"><title>EMT Epithelial: 11% of axis score</title></path>
+        <path d="M102.8 93.5 L85.0 53.2 Q93.3 44.6 104.6 48.2 L108.4 92.1 Z" fill="#cf6b8c" stroke="#f0ebe2" stroke-width="1"><title>EMT Mesenchymal: 24% of axis score</title></path>
+        <circle cx="110" cy="110" r="18" fill="#fffdf8" stroke="#d9d1c4"></circle>
+        <text x="110" y="114" text-anchor="middle" fill="#222" font-size="10" font-weight="800">raw %</text>
+      </svg>
+      <div class="ratio-summary"><b>Angio</b> 38/42/20<br><b>Immuno</b> 14/33/32/21<br><b>Fibrosis</b> 24/22/15/39<br><b>EMT</b> 28/37/11/24</div>
+    </article>
+    <article class="example-card">
+      <div class="example-meta"><span><strong>RHF1546</strong> / NR</span><span>bucket / axis score</span></div>
+      <svg class="mini-petal" viewBox="0 0 220 220" role="img">
+        <title>Raw contribution petal plot for RHF1546</title>
+        <desc>Bucket petals sized by bucket score divided by axis score.</desc>
+        <rect width="220" height="220" rx="8" fill="#fffdf8"></rect>
+        <path d="M111.6 92.1 L117.4 25.6 Q138.1 22.3 153.1 37.0 L119.1 94.5 Z" fill="#378add" stroke="#f0ebe2" stroke-width="1"><title>Angio Angiogenic: 39% of axis score</title></path>
+        <path d="M119.6 94.8 L156.0 37.0 Q176.3 43.7 183.0 64.0 L125.2 100.4 Z" fill="#499cef" stroke="#f0ebe2" stroke-width="1"><title>Angio Endothelial: 40% of axis score</title></path>
+        <path d="M125.5 100.9 L159.6 80.8 Q169.6 90.9 167.3 105.0 L127.9 108.4 Z" fill="#5baeff" stroke="#f0ebe2" stroke-width="1"><title>Angio Hypoxia: 21% of axis score</title></path>
+        <path d="M127.9 111.6 L158.3 114.2 Q161.0 123.1 154.4 129.5 L126.5 117.2 Z" fill="#0f6e56" stroke="#f0ebe2" stroke-width="1"><title>Immuno Antigen: 15% of axis score</title></path>
+        <path d="M126.3 117.7 L177.0 141.8 Q176.2 156.0 163.2 161.7 L122.9 122.5 Z" fill="#218068" stroke="#f0ebe2" stroke-width="1"><title>Immuno Inflammation: 32% of axis score</title></path>
+        <path d="M122.5 122.9 L160.6 162.1 Q155.1 174.9 141.2 175.6 L117.7 126.3 Z" fill="#33927a" stroke="#f0ebe2" stroke-width="1"><title>Immuno Innate: 31% of axis score</title></path>
+        <path d="M117.2 126.5 L133.8 164.1 Q125.9 172.2 115.1 168.8 L111.6 127.9 Z" fill="#45a48c" stroke="#f0ebe2" stroke-width="1"><title>Immuno Stroma: 22% of axis score</title></path>
+        <path d="M108.4 127.9 L104.5 173.3 Q92.9 177.0 84.4 168.2 L102.8 126.5 Z" fill="#993c1d" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Cell-Matrix: 25% of axis score</title></path>
+        <path d="M102.3 126.3 L85.9 160.6 Q75.3 160.0 71.0 150.2 L97.5 122.9 Z" fill="#ab4e2f" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis ECM: 20% of axis score</title></path>
+        <path d="M97.1 122.5 L74.1 144.8 Q65.4 141.0 64.9 131.5 L93.7 117.7 Z" fill="#bd6041" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Fibroblast: 16% of axis score</title></path>
+        <path d="M93.5 117.2 L32.4 144.1 Q20.7 132.9 25.6 117.4 L92.1 111.6 Z" fill="#cf7253" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Pro-Fibrotic: 39% of axis score</title></path>
+        <path d="M92.1 108.4 L42.1 104.1 Q38.3 91.6 47.6 82.6 L93.5 102.8 Z" fill="#993556" stroke="#f0ebe2" stroke-width="1"><title>EMT Initiation: 28% of axis score</title></path>
+        <path d="M93.7 102.3 L34.8 74.3 Q35.7 58.4 50.3 52.0 L97.1 97.5 Z" fill="#ab4768" stroke="#f0ebe2" stroke-width="1"><title>EMT Maintenance: 38% of axis score</title></path>
+        <path d="M97.5 97.1 L77.3 76.3 Q80.9 68.1 89.8 67.6 L102.3 93.7 Z" fill="#bd597a" stroke="#f0ebe2" stroke-width="1"><title>EMT Epithelial: 14% of axis score</title></path>
+        <path d="M102.8 93.5 L88.1 60.1 Q95.3 52.6 105.2 55.7 L108.4 92.1 Z" fill="#cf6b8c" stroke="#f0ebe2" stroke-width="1"><title>EMT Mesenchymal: 19% of axis score</title></path>
+        <circle cx="110" cy="110" r="18" fill="#fffdf8" stroke="#d9d1c4"></circle>
+        <text x="110" y="114" text-anchor="middle" fill="#222" font-size="10" font-weight="800">raw %</text>
+      </svg>
+      <div class="ratio-summary"><b>Angio</b> 39/40/21<br><b>Immuno</b> 15/32/31/22<br><b>Fibrosis</b> 25/20/16/39<br><b>EMT</b> 28/38/14/19</div>
+    </article>
+    <article class="example-card">
+      <div class="example-meta"><span><strong>RHF1547</strong> / NR</span><span>bucket / axis score</span></div>
+      <svg class="mini-petal" viewBox="0 0 220 220" role="img">
+        <title>Raw contribution petal plot for RHF1547</title>
+        <desc>Bucket petals sized by bucket score divided by axis score.</desc>
+        <rect width="220" height="220" rx="8" fill="#fffdf8"></rect>
+        <path d="M111.6 92.1 L117.4 25.6 Q138.1 22.3 153.1 37.0 L119.1 94.5 Z" fill="#378add" stroke="#f0ebe2" stroke-width="1"><title>Angio Angiogenic: 39% of axis score</title></path>
+        <path d="M119.6 94.8 L155.2 38.3 Q175.1 44.9 181.7 64.8 L125.2 100.4 Z" fill="#499cef" stroke="#f0ebe2" stroke-width="1"><title>Angio Endothelial: 39% of axis score</title></path>
+        <path d="M125.5 100.9 L160.9 80.0 Q171.1 90.4 168.8 104.9 L127.9 108.4 Z" fill="#5baeff" stroke="#f0ebe2" stroke-width="1"><title>Angio Hypoxia: 22% of axis score</title></path>
+        <path d="M127.9 111.6 L158.3 114.2 Q161.0 123.1 154.4 129.5 L126.5 117.2 Z" fill="#0f6e56" stroke="#f0ebe2" stroke-width="1"><title>Immuno Antigen: 15% of axis score</title></path>
+        <path d="M126.3 117.7 L177.0 141.8 Q176.2 156.0 163.2 161.7 L122.9 122.5 Z" fill="#218068" stroke="#f0ebe2" stroke-width="1"><title>Immuno Inflammation: 32% of axis score</title></path>
+        <path d="M122.5 122.9 L160.6 162.1 Q155.1 174.9 141.2 175.6 L117.7 126.3 Z" fill="#33927a" stroke="#f0ebe2" stroke-width="1"><title>Immuno Innate: 31% of axis score</title></path>
+        <path d="M117.2 126.5 L133.1 162.7 Q125.5 170.6 115.0 167.3 L111.6 127.9 Z" fill="#45a48c" stroke="#f0ebe2" stroke-width="1"><title>Immuno Stroma: 21% of axis score</title></path>
+        <path d="M108.4 127.9 L104.5 173.3 Q92.9 177.0 84.4 168.2 L102.8 126.5 Z" fill="#993c1d" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Cell-Matrix: 25% of axis score</title></path>
+        <path d="M102.3 126.3 L85.3 162.0 Q74.3 161.4 69.9 151.3 L97.5 122.9 Z" fill="#ab4e2f" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis ECM: 21% of axis score</title></path>
+        <path d="M97.1 122.5 L74.1 144.8 Q65.4 141.0 64.9 131.5 L93.7 117.7 Z" fill="#bd6041" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Fibroblast: 16% of axis score</title></path>
+        <path d="M93.5 117.2 L33.8 143.5 Q22.3 132.4 27.1 117.3 L92.1 111.6 Z" fill="#cf7253" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Pro-Fibrotic: 38% of axis score</title></path>
+        <path d="M92.1 108.4 L42.1 104.1 Q38.3 91.6 47.6 82.6 L93.5 102.8 Z" fill="#993556" stroke="#f0ebe2" stroke-width="1"><title>EMT Initiation: 28% of axis score</title></path>
+        <path d="M93.7 102.3 L34.8 74.3 Q35.7 58.4 50.3 52.0 L97.1 97.5 Z" fill="#ab4768" stroke="#f0ebe2" stroke-width="1"><title>EMT Maintenance: 38% of axis score</title></path>
+        <path d="M97.5 97.1 L78.4 77.4 Q81.8 69.4 90.5 69.0 L102.3 93.7 Z" fill="#bd597a" stroke="#f0ebe2" stroke-width="1"><title>EMT Epithelial: 13% of axis score</title></path>
+        <path d="M102.8 93.5 L86.9 57.3 Q94.5 49.4 105.0 52.7 L108.4 92.1 Z" fill="#cf6b8c" stroke="#f0ebe2" stroke-width="1"><title>EMT Mesenchymal: 21% of axis score</title></path>
+        <circle cx="110" cy="110" r="18" fill="#fffdf8" stroke="#d9d1c4"></circle>
+        <text x="110" y="114" text-anchor="middle" fill="#222" font-size="10" font-weight="800">raw %</text>
+      </svg>
+      <div class="ratio-summary"><b>Angio</b> 39/39/22<br><b>Immuno</b> 15/32/31/21<br><b>Fibrosis</b> 25/21/16/38<br><b>EMT</b> 28/38/13/21</div>
+    </article>
+    <article class="example-card">
+      <div class="example-meta"><span><strong>RHF1548</strong> / R</span><span>bucket / axis score</span></div>
+      <svg class="mini-petal" viewBox="0 0 220 220" role="img">
+        <title>Raw contribution petal plot for RHF1548</title>
+        <desc>Bucket petals sized by bucket score divided by axis score.</desc>
+        <rect width="220" height="220" rx="8" fill="#fffdf8"></rect>
+        <path d="M111.6 92.1 L117.3 27.1 Q137.6 23.8 152.3 38.3 L119.1 94.5 Z" fill="#378add" stroke="#f0ebe2" stroke-width="1"><title>Angio Angiogenic: 38% of axis score</title></path>
+        <path d="M119.6 94.8 L156.8 35.7 Q177.5 42.5 184.3 63.2 L125.2 100.4 Z" fill="#499cef" stroke="#f0ebe2" stroke-width="1"><title>Angio Endothelial: 41% of axis score</title></path>
+        <path d="M125.5 100.9 L159.6 80.8 Q169.6 90.9 167.3 105.0 L127.9 108.4 Z" fill="#5baeff" stroke="#f0ebe2" stroke-width="1"><title>Angio Hypoxia: 21% of axis score</title></path>
+        <path d="M127.9 111.6 L158.3 114.2 Q161.0 123.1 154.4 129.5 L126.5 117.2 Z" fill="#0f6e56" stroke="#f0ebe2" stroke-width="1"><title>Immuno Antigen: 15% of axis score</title></path>
+        <path d="M126.3 117.7 L177.0 141.8 Q176.2 156.0 163.2 161.7 L122.9 122.5 Z" fill="#218068" stroke="#f0ebe2" stroke-width="1"><title>Immuno Inflammation: 32% of axis score</title></path>
+        <path d="M122.5 122.9 L162.7 164.3 Q156.9 177.6 142.5 178.4 L117.7 126.3 Z" fill="#33927a" stroke="#f0ebe2" stroke-width="1"><title>Immuno Innate: 33% of axis score</title></path>
+        <path d="M117.2 126.5 L132.5 161.3 Q125.1 169.0 114.9 165.8 L111.6 127.9 Z" fill="#45a48c" stroke="#f0ebe2" stroke-width="1"><title>Immuno Stroma: 20% of axis score</title></path>
+        <path d="M108.4 127.9 L104.5 173.3 Q92.9 177.0 84.4 168.2 L102.8 126.5 Z" fill="#993c1d" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Cell-Matrix: 25% of axis score</title></path>
+        <path d="M102.3 126.3 L85.9 160.6 Q75.3 160.0 71.0 150.2 L97.5 122.9 Z" fill="#ab4e2f" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis ECM: 20% of axis score</title></path>
+        <path d="M97.1 122.5 L74.1 144.8 Q65.4 141.0 64.9 131.5 L93.7 117.7 Z" fill="#bd6041" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Fibroblast: 16% of axis score</title></path>
+        <path d="M93.5 117.2 L32.4 144.1 Q20.7 132.9 25.6 117.4 L92.1 111.6 Z" fill="#cf7253" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Pro-Fibrotic: 39% of axis score</title></path>
+        <path d="M92.1 108.4 L42.1 104.1 Q38.3 91.6 47.6 82.6 L93.5 102.8 Z" fill="#993556" stroke="#f0ebe2" stroke-width="1"><title>EMT Initiation: 28% of axis score</title></path>
+        <path d="M93.7 102.3 L33.4 73.6 Q34.3 57.4 49.2 51.0 L97.1 97.5 Z" fill="#ab4768" stroke="#f0ebe2" stroke-width="1"><title>EMT Maintenance: 39% of axis score</title></path>
+        <path d="M97.5 97.1 L78.4 77.4 Q81.8 69.4 90.5 69.0 L102.3 93.7 Z" fill="#bd597a" stroke="#f0ebe2" stroke-width="1"><title>EMT Epithelial: 13% of axis score</title></path>
+        <path d="M102.8 93.5 L86.9 57.3 Q94.5 49.4 105.0 52.7 L108.4 92.1 Z" fill="#cf6b8c" stroke="#f0ebe2" stroke-width="1"><title>EMT Mesenchymal: 21% of axis score</title></path>
+        <circle cx="110" cy="110" r="18" fill="#fffdf8" stroke="#d9d1c4"></circle>
+        <text x="110" y="114" text-anchor="middle" fill="#222" font-size="10" font-weight="800">raw %</text>
+      </svg>
+      <div class="ratio-summary"><b>Angio</b> 38/41/21<br><b>Immuno</b> 15/32/33/20<br><b>Fibrosis</b> 25/20/16/39<br><b>EMT</b> 28/39/13/21</div>
+    </article>
+    <article class="example-card">
+      <div class="example-meta"><span><strong>RHF1549</strong> / NR</span><span>bucket / axis score</span></div>
+      <svg class="mini-petal" viewBox="0 0 220 220" role="img">
+        <title>Raw contribution petal plot for RHF1549</title>
+        <desc>Bucket petals sized by bucket score divided by axis score.</desc>
+        <rect width="220" height="220" rx="8" fill="#fffdf8"></rect>
+        <path d="M111.6 92.1 L117.0 30.1 Q136.6 27.0 150.8 40.9 L119.1 94.5 Z" fill="#378add" stroke="#f0ebe2" stroke-width="1"><title>Angio Angiogenic: 36% of axis score</title></path>
+        <path d="M119.6 94.8 L159.2 31.9 Q181.0 39.0 188.1 60.8 L125.2 100.4 Z" fill="#499cef" stroke="#f0ebe2" stroke-width="1"><title>Angio Endothelial: 44% of axis score</title></path>
+        <path d="M125.5 100.9 L158.3 81.5 Q168.0 91.4 165.8 105.1 L127.9 108.4 Z" fill="#5baeff" stroke="#f0ebe2" stroke-width="1"><title>Angio Hypoxia: 20% of axis score</title></path>
+        <path d="M127.9 111.6 L159.8 114.4 Q162.6 123.5 155.7 130.1 L126.5 117.2 Z" fill="#0f6e56" stroke="#f0ebe2" stroke-width="1"><title>Immuno Antigen: 16% of axis score</title></path>
+        <path d="M126.3 117.7 L179.7 143.1 Q178.9 157.9 165.4 163.8 L122.9 122.5 Z" fill="#218068" stroke="#f0ebe2" stroke-width="1"><title>Immuno Inflammation: 34% of axis score</title></path>
+        <path d="M122.5 122.9 L161.7 163.2 Q156.0 176.2 141.8 177.0 L117.7 126.3 Z" fill="#33927a" stroke="#f0ebe2" stroke-width="1"><title>Immuno Innate: 32% of axis score</title></path>
+        <path d="M117.2 126.5 L131.9 159.9 Q124.7 167.4 114.8 164.3 L111.6 127.9 Z" fill="#45a48c" stroke="#f0ebe2" stroke-width="1"><title>Immuno Stroma: 19% of axis score</title></path>
+        <path d="M108.4 127.9 L104.6 171.8 Q93.3 175.4 85.0 166.8 L102.8 126.5 Z" fill="#993c1d" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Cell-Matrix: 24% of axis score</title></path>
+        <path d="M102.3 126.3 L85.3 162.0 Q74.3 161.4 69.9 151.3 L97.5 122.9 Z" fill="#ab4e2f" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis ECM: 21% of axis score</title></path>
+        <path d="M97.1 122.5 L75.2 143.7 Q66.7 140.0 66.2 130.8 L93.7 117.7 Z" fill="#bd6041" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Fibroblast: 15% of axis score</title></path>
+        <path d="M93.5 117.2 L31.0 144.7 Q19.2 133.3 24.1 117.5 L92.1 111.6 Z" fill="#cf7253" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Pro-Fibrotic: 40% of axis score</title></path>
+        <path d="M92.1 108.4 L43.6 104.2 Q39.9 92.0 49.0 83.2 L93.5 102.8 Z" fill="#993556" stroke="#f0ebe2" stroke-width="1"><title>EMT Initiation: 27% of axis score</title></path>
+        <path d="M93.7 102.3 L30.7 72.3 Q31.6 55.6 47.0 48.9 L97.1 97.5 Z" fill="#ab4768" stroke="#f0ebe2" stroke-width="1"><title>EMT Maintenance: 41% of axis score</title></path>
+        <path d="M97.5 97.1 L82.6 81.7 Q85.6 74.8 93.1 74.4 L102.3 93.7 Z" fill="#bd597a" stroke="#f0ebe2" stroke-width="1"><title>EMT Epithelial: 9% of axis score</title></path>
+        <path d="M102.8 93.5 L85.6 54.6 Q93.7 46.2 104.7 49.7 L108.4 92.1 Z" fill="#cf6b8c" stroke="#f0ebe2" stroke-width="1"><title>EMT Mesenchymal: 23% of axis score</title></path>
+        <circle cx="110" cy="110" r="18" fill="#fffdf8" stroke="#d9d1c4"></circle>
+        <text x="110" y="114" text-anchor="middle" fill="#222" font-size="10" font-weight="800">raw %</text>
+      </svg>
+      <div class="ratio-summary"><b>Angio</b> 36/44/20<br><b>Immuno</b> 16/34/32/19<br><b>Fibrosis</b> 24/21/15/40<br><b>EMT</b> 27/41/9/23</div>
+    </article>
+    <article class="example-card">
+      <div class="example-meta"><span><strong>RHF1550</strong> / R</span><span>bucket / axis score</span></div>
+      <svg class="mini-petal" viewBox="0 0 220 220" role="img">
+        <title>Raw contribution petal plot for RHF1550</title>
+        <desc>Bucket petals sized by bucket score divided by axis score.</desc>
+        <rect width="220" height="220" rx="8" fill="#fffdf8"></rect>
+        <path d="M111.6 92.1 L117.4 25.6 Q138.1 22.3 153.1 37.0 L119.1 94.5 Z" fill="#378add" stroke="#f0ebe2" stroke-width="1"><title>Angio Angiogenic: 39% of axis score</title></path>
+        <path d="M119.6 94.8 L155.2 38.3 Q175.1 44.9 181.7 64.8 L125.2 100.4 Z" fill="#499cef" stroke="#f0ebe2" stroke-width="1"><title>Angio Endothelial: 39% of axis score</title></path>
+        <path d="M125.5 100.9 L162.2 79.2 Q172.7 89.9 170.3 104.7 L127.9 108.4 Z" fill="#5baeff" stroke="#f0ebe2" stroke-width="1"><title>Angio Hypoxia: 23% of axis score</title></path>
+        <path d="M127.9 111.6 L159.8 114.4 Q162.6 123.5 155.7 130.1 L126.5 117.2 Z" fill="#0f6e56" stroke="#f0ebe2" stroke-width="1"><title>Immuno Antigen: 16% of axis score</title></path>
+        <path d="M126.3 117.7 L174.3 140.5 Q173.5 154.1 161.0 159.6 L122.9 122.5 Z" fill="#218068" stroke="#f0ebe2" stroke-width="1"><title>Immuno Inflammation: 30% of axis score</title></path>
+        <path d="M122.5 122.9 L162.7 164.3 Q156.9 177.6 142.5 178.4 L117.7 126.3 Z" fill="#33927a" stroke="#f0ebe2" stroke-width="1"><title>Immuno Innate: 33% of axis score</title></path>
+        <path d="M117.2 126.5 L133.8 164.1 Q125.9 172.2 115.1 168.8 L111.6 127.9 Z" fill="#45a48c" stroke="#f0ebe2" stroke-width="1"><title>Immuno Stroma: 22% of axis score</title></path>
+        <path d="M108.4 127.9 L104.5 173.3 Q92.9 177.0 84.4 168.2 L102.8 126.5 Z" fill="#993c1d" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Cell-Matrix: 25% of axis score</title></path>
+        <path d="M102.3 126.3 L86.6 159.2 Q76.2 158.7 72.0 149.1 L97.5 122.9 Z" fill="#ab4e2f" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis ECM: 19% of axis score</title></path>
+        <path d="M97.1 122.5 L74.1 144.8 Q65.4 141.0 64.9 131.5 L93.7 117.7 Z" fill="#bd6041" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Fibroblast: 16% of axis score</title></path>
+        <path d="M93.5 117.2 L31.0 144.7 Q19.2 133.3 24.1 117.5 L92.1 111.6 Z" fill="#cf7253" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Pro-Fibrotic: 40% of axis score</title></path>
+        <path d="M92.1 108.4 L40.6 103.9 Q36.7 91.2 46.3 82.0 L93.5 102.8 Z" fill="#993556" stroke="#f0ebe2" stroke-width="1"><title>EMT Initiation: 29% of axis score</title></path>
+        <path d="M93.7 102.3 L32.1 73.0 Q33.0 56.5 48.1 49.9 L97.1 97.5 Z" fill="#ab4768" stroke="#f0ebe2" stroke-width="1"><title>EMT Maintenance: 40% of axis score</title></path>
+        <path d="M97.5 97.1 L77.3 76.3 Q80.9 68.1 89.8 67.6 L102.3 93.7 Z" fill="#bd597a" stroke="#f0ebe2" stroke-width="1"><title>EMT Epithelial: 14% of axis score</title></path>
+        <path d="M102.8 93.5 L88.7 61.5 Q95.7 54.2 105.4 57.2 L108.4 92.1 Z" fill="#cf6b8c" stroke="#f0ebe2" stroke-width="1"><title>EMT Mesenchymal: 18% of axis score</title></path>
+        <circle cx="110" cy="110" r="18" fill="#fffdf8" stroke="#d9d1c4"></circle>
+        <text x="110" y="114" text-anchor="middle" fill="#222" font-size="10" font-weight="800">raw %</text>
+      </svg>
+      <div class="ratio-summary"><b>Angio</b> 39/39/23<br><b>Immuno</b> 16/30/33/22<br><b>Fibrosis</b> 25/19/16/40<br><b>EMT</b> 29/40/14/18</div>
+    </article>
+    <article class="example-card">
+      <div class="example-meta"><span><strong>RHF1551</strong> / NR</span><span>bucket / axis score</span></div>
+      <svg class="mini-petal" viewBox="0 0 220 220" role="img">
+        <title>Raw contribution petal plot for RHF1551</title>
+        <desc>Bucket petals sized by bucket score divided by axis score.</desc>
+        <rect width="220" height="220" rx="8" fill="#fffdf8"></rect>
+        <path d="M111.6 92.1 L117.4 25.6 Q138.1 22.3 153.1 37.0 L119.1 94.5 Z" fill="#378add" stroke="#f0ebe2" stroke-width="1"><title>Angio Angiogenic: 39% of axis score</title></path>
+        <path d="M119.6 94.8 L156.0 37.0 Q176.3 43.7 183.0 64.0 L125.2 100.4 Z" fill="#499cef" stroke="#f0ebe2" stroke-width="1"><title>Angio Endothelial: 40% of axis score</title></path>
+        <path d="M125.5 100.9 L159.6 80.8 Q169.6 90.9 167.3 105.0 L127.9 108.4 Z" fill="#5baeff" stroke="#f0ebe2" stroke-width="1"><title>Angio Hypoxia: 21% of axis score</title></path>
+        <path d="M127.9 111.6 L156.8 114.1 Q159.4 122.7 153.0 128.9 L126.5 117.2 Z" fill="#0f6e56" stroke="#f0ebe2" stroke-width="1"><title>Immuno Antigen: 14% of axis score</title></path>
+        <path d="M126.3 117.7 L177.0 141.8 Q176.2 156.0 163.2 161.7 L122.9 122.5 Z" fill="#218068" stroke="#f0ebe2" stroke-width="1"><title>Immuno Inflammation: 32% of axis score</title></path>
+        <path d="M122.5 122.9 L161.7 163.2 Q156.0 176.2 141.8 177.0 L117.7 126.3 Z" fill="#33927a" stroke="#f0ebe2" stroke-width="1"><title>Immuno Innate: 32% of axis score</title></path>
+        <path d="M117.2 126.5 L133.8 164.1 Q125.9 172.2 115.1 168.8 L111.6 127.9 Z" fill="#45a48c" stroke="#f0ebe2" stroke-width="1"><title>Immuno Stroma: 22% of axis score</title></path>
+        <path d="M108.4 127.9 L104.6 171.8 Q93.3 175.4 85.0 166.8 L102.8 126.5 Z" fill="#993c1d" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Cell-Matrix: 24% of axis score</title></path>
+        <path d="M102.3 126.3 L85.3 162.0 Q74.3 161.4 69.9 151.3 L97.5 122.9 Z" fill="#ab4e2f" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis ECM: 21% of axis score</title></path>
+        <path d="M97.1 122.5 L74.1 144.8 Q65.4 141.0 64.9 131.5 L93.7 117.7 Z" fill="#bd6041" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Fibroblast: 16% of axis score</title></path>
+        <path d="M93.5 117.2 L32.4 144.1 Q20.7 132.9 25.6 117.4 L92.1 111.6 Z" fill="#cf7253" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Pro-Fibrotic: 39% of axis score</title></path>
+        <path d="M92.1 108.4 L40.6 103.9 Q36.7 91.2 46.3 82.0 L93.5 102.8 Z" fill="#993556" stroke="#f0ebe2" stroke-width="1"><title>EMT Initiation: 29% of axis score</title></path>
+        <path d="M93.7 102.3 L34.8 74.3 Q35.7 58.4 50.3 52.0 L97.1 97.5 Z" fill="#ab4768" stroke="#f0ebe2" stroke-width="1"><title>EMT Maintenance: 38% of axis score</title></path>
+        <path d="M97.5 97.1 L80.5 79.6 Q83.7 72.1 91.8 71.7 L102.3 93.7 Z" fill="#bd597a" stroke="#f0ebe2" stroke-width="1"><title>EMT Epithelial: 11% of axis score</title></path>
+        <path d="M102.8 93.5 L86.2 55.9 Q94.1 47.8 104.9 51.2 L108.4 92.1 Z" fill="#cf6b8c" stroke="#f0ebe2" stroke-width="1"><title>EMT Mesenchymal: 22% of axis score</title></path>
+        <circle cx="110" cy="110" r="18" fill="#fffdf8" stroke="#d9d1c4"></circle>
+        <text x="110" y="114" text-anchor="middle" fill="#222" font-size="10" font-weight="800">raw %</text>
+      </svg>
+      <div class="ratio-summary"><b>Angio</b> 39/40/21<br><b>Immuno</b> 14/32/32/22<br><b>Fibrosis</b> 24/21/16/39<br><b>EMT</b> 29/38/11/22</div>
+    </article>
+    <article class="example-card">
+      <div class="example-meta"><span><strong>YCC-S04</strong> / R</span><span>bucket / axis score</span></div>
+      <svg class="mini-petal" viewBox="0 0 220 220" role="img">
+        <title>Raw contribution petal plot for YCC-S04</title>
+        <desc>Bucket petals sized by bucket score divided by axis score.</desc>
+        <rect width="220" height="220" rx="8" fill="#fffdf8"></rect>
+        <path d="M111.6 92.1 L117.4 25.6 Q138.1 22.3 153.1 37.0 L119.1 94.5 Z" fill="#378add" stroke="#f0ebe2" stroke-width="1"><title>Angio Angiogenic: 39% of axis score</title></path>
+        <path d="M119.6 94.8 L155.2 38.3 Q175.1 44.9 181.7 64.8 L125.2 100.4 Z" fill="#499cef" stroke="#f0ebe2" stroke-width="1"><title>Angio Endothelial: 39% of axis score</title></path>
+        <path d="M125.5 100.9 L160.9 80.0 Q171.1 90.4 168.8 104.9 L127.9 108.4 Z" fill="#5baeff" stroke="#f0ebe2" stroke-width="1"><title>Angio Hypoxia: 22% of axis score</title></path>
+        <path d="M127.9 111.6 L159.8 114.4 Q162.6 123.5 155.7 130.1 L126.5 117.2 Z" fill="#0f6e56" stroke="#f0ebe2" stroke-width="1"><title>Immuno Antigen: 16% of axis score</title></path>
+        <path d="M126.3 117.7 L174.3 140.5 Q173.5 154.1 161.0 159.6 L122.9 122.5 Z" fill="#218068" stroke="#f0ebe2" stroke-width="1"><title>Immuno Inflammation: 30% of axis score</title></path>
+        <path d="M122.5 122.9 L162.7 164.3 Q156.9 177.6 142.5 178.4 L117.7 126.3 Z" fill="#33927a" stroke="#f0ebe2" stroke-width="1"><title>Immuno Innate: 33% of axis score</title></path>
+        <path d="M117.2 126.5 L133.1 162.7 Q125.5 170.6 115.0 167.3 L111.6 127.9 Z" fill="#45a48c" stroke="#f0ebe2" stroke-width="1"><title>Immuno Stroma: 21% of axis score</title></path>
+        <path d="M108.4 127.9 L104.6 171.8 Q93.3 175.4 85.0 166.8 L102.8 126.5 Z" fill="#993c1d" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Cell-Matrix: 24% of axis score</title></path>
+        <path d="M102.3 126.3 L86.6 159.2 Q76.2 158.7 72.0 149.1 L97.5 122.9 Z" fill="#ab4e2f" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis ECM: 19% of axis score</title></path>
+        <path d="M97.1 122.5 L73.1 145.9 Q64.0 141.9 63.5 132.1 L93.7 117.7 Z" fill="#bd6041" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Fibroblast: 17% of axis score</title></path>
+        <path d="M93.5 117.2 L31.0 144.7 Q19.2 133.3 24.1 117.5 L92.1 111.6 Z" fill="#cf7253" stroke="#f0ebe2" stroke-width="1"><title>Fibrosis Pro-Fibrotic: 40% of axis score</title></path>
+        <path d="M92.1 108.4 L40.6 103.9 Q36.7 91.2 46.3 82.0 L93.5 102.8 Z" fill="#993556" stroke="#f0ebe2" stroke-width="1"><title>EMT Initiation: 29% of axis score</title></path>
+        <path d="M93.7 102.3 L33.4 73.6 Q34.3 57.4 49.2 51.0 L97.1 97.5 Z" fill="#ab4768" stroke="#f0ebe2" stroke-width="1"><title>EMT Maintenance: 39% of axis score</title></path>
+        <path d="M97.5 97.1 L78.4 77.4 Q81.8 69.4 90.5 69.0 L102.3 93.7 Z" fill="#bd597a" stroke="#f0ebe2" stroke-width="1"><title>EMT Epithelial: 13% of axis score</title></path>
+        <path d="M102.8 93.5 L88.1 60.1 Q95.3 52.6 105.2 55.7 L108.4 92.1 Z" fill="#cf6b8c" stroke="#f0ebe2" stroke-width="1"><title>EMT Mesenchymal: 19% of axis score</title></path>
+        <circle cx="110" cy="110" r="18" fill="#fffdf8" stroke="#d9d1c4"></circle>
+        <text x="110" y="114" text-anchor="middle" fill="#222" font-size="10" font-weight="800">raw %</text>
+      </svg>
+      <div class="ratio-summary"><b>Angio</b> 39/39/22<br><b>Immuno</b> 16/30/33/21<br><b>Fibrosis</b> 24/19/17/40<br><b>EMT</b> 29/39/13/19</div>
+    </article>
+  </div>
+</section>
+<div class="note-grid">
+  <div class="note">
+    <strong>Takeaways</strong>
+    <ul class="takeaway-list">
+      <li>Genes per bucket correlate with mean absolute bucket score: <b>r = 0.770</b>.</li>
+      <li>Sub-buckets per bucket correlate even more strongly with mean absolute bucket score: <b>r = 0.987</b>.</li>
+      <li>Raw contribution mostly reflects bucket size, so percentiles are cleaner for patient-level interpretation.</li>
+      <li>PPI centrality weighting is part of the upstream score design: central genes, hubs, and bottlenecks can carry more weight before bucket and axis percentiles are derived.</li>
+    </ul>
+  </div>
+</div>
+</div>
+<div class="page-links"><a href="../index.html">Back to overview</a></div>
+</main>
+<script>
+const data = [
+  {score:'Immunogenicity', bucket:'Inflammation', genes:164, subBuckets:13, meanAbs:3.7023, color:'#0F6E56'},
+  {score:'EMT', bucket:'Epithelial Markers', genes:174, subBuckets:4, meanAbs:1.4662, color:'#993556'},
+  {score:'Immunogenicity', bucket:'TME/Stroma', genes:204, subBuckets:8, meanAbs:2.4160, color:'#0F6E56'},
+  {score:'Immunogenicity', bucket:'Antigen Presentation', genes:209, subBuckets:7, meanAbs:1.7855, color:'#0F6E56'},
+  {score:'Fibrosis', bucket:'Fibroblast Signature', genes:220, subBuckets:4, meanAbs:1.6363, color:'#993C1D'},
+  {score:'Fibrosis', bucket:'Cell-Matrix Adhesion', genes:266, subBuckets:8, meanAbs:2.5245, color:'#993C1D'},
+  {score:'Angiogenesis', bucket:'Hypoxia Signalling', genes:298, subBuckets:7, meanAbs:2.2185, color:'#378ADD'},
+  {score:'Immunogenicity', bucket:'Innate Immune Activation', genes:334, subBuckets:13, meanAbs:3.6949, color:'#0F6E56'},
+  {score:'EMT', bucket:'Mesenchymal Markers', genes:348, subBuckets:8, meanAbs:2.4926, color:'#993556'},
+  {score:'Fibrosis', bucket:'ECM Remodelling', genes:391, subBuckets:7, meanAbs:2.0839, color:'#993C1D'},
+  {score:'Angiogenesis', bucket:'Endothelial Cell Signature', genes:565, subBuckets:14, meanAbs:4.0948, color:'#378ADD'},
+  {score:'EMT', bucket:'EMT Initiation', genes:625, subBuckets:13, meanAbs:3.4185, color:'#993556'},
+  {score:'Angiogenesis', bucket:'Angiogenic Signalling', genes:676, subBuckets:14, meanAbs:3.9415, color:'#378ADD'},
+  {score:'EMT', bucket:'EMT Maintenance', genes:776, subBuckets:18, meanAbs:4.6849, color:'#993556'},
+  {score:'Fibrosis', bucket:'Pro-Fibrotic Signalling', genes:790, subBuckets:16, meanAbs:4.1112, color:'#993C1D'}
+];
+
+const svg = document.getElementById('scatter');
+const W = 1080, H = 680;
+const margin = {left: 82, right: 270, top: 56, bottom: 72};
+const plotW = W - margin.left - margin.right;
+const plotH = H - margin.top - margin.bottom;
+
+function scale(value, inMin, inMax, outMin, outMax) {
+  return outMin + (value - inMin) * (outMax - outMin) / (inMax - inMin);
+}
+
+function regression(points) {
+  const n = points.length;
+  const sx = points.reduce((s,d)=>s+d.genes,0);
+  const sy = points.reduce((s,d)=>s+d.meanAbs,0);
+  const sxy = points.reduce((s,d)=>s+d.genes*d.meanAbs,0);
+  const sx2 = points.reduce((s,d)=>s+d.genes*d.genes,0);
+  const slope = (n*sxy - sx*sy) / (n*sx2 - sx*sx);
+  const intercept = (sy - slope*sx) / n;
+  return {slope, intercept};
+}
+
+function shade(hex, amt) {
+  const n = parseInt(hex.slice(1), 16);
+  let r = (n >> 16) + amt;
+  let g = (n >> 8 & 255) + amt;
+  let b = (n & 255) + amt;
+  r = Math.max(0, Math.min(255, r));
+  g = Math.max(0, Math.min(255, g));
+  b = Math.max(0, Math.min(255, b));
+  return '#'+(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
+}
+
+function labelLines(text, maxChars=18) {
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  words.forEach(word => {
+    const next = line ? line + ' ' + word : word;
+    if (next.length > maxChars && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = next;
+    }
+  });
+  if (line) lines.push(line);
+  return lines.slice(0, 2);
+}
+
+function labelCallout(d, x, y, r, plotBounds) {
+  const lines = labelLines(d.bucket, 16);
+  const lineHeight = 11;
+  const padX = 5;
+  const padY = 4;
+  const textWidth = Math.max(...lines.map(line => line.length)) * 5.2;
+  const boxW = textWidth + padX * 2;
+  const boxH = lines.length * lineHeight + padY * 2 - 2;
+  const rightSide = x < plotBounds.left + plotBounds.width * 0.58;
+  const below = y < plotBounds.top + plotBounds.height * 0.36;
+  let textX = x + (rightSide ? r + 16 : -(r + 16));
+  let boxY = y + (below ? r + 10 : -(r + 10 + boxH));
+  boxY = Math.max(plotBounds.top + 6, Math.min(plotBounds.bottom - boxH - 6, boxY));
+
+  if (rightSide) {
+    textX = Math.min(textX, plotBounds.right - boxW - 6);
+    textX = Math.max(textX, x + r + 10);
+  } else {
+    textX = Math.max(textX, plotBounds.left + boxW + 6);
+    textX = Math.min(textX, x - r - 10);
+  }
+
+  const anchor = rightSide ? 'start' : 'end';
+  const boxX = rightSide ? textX - padX : textX - boxW + padX;
+  const lineEndX = rightSide ? boxX - 4 : boxX + boxW + 4;
+  const lineEndY = boxY + boxH / 2;
+  const lineStartX = x + (rightSide ? r + 1 : -(r + 1));
+  const lineStartY = y;
+  let out = '';
+  out += '<line x1="'+lineStartX.toFixed(1)+'" y1="'+lineStartY.toFixed(1)+'" x2="'+lineEndX.toFixed(1)+'" y2="'+lineEndY.toFixed(1)+'" stroke="#8a837a" stroke-width="0.7" opacity="0.55"></line>';
+  out += '<rect x="'+boxX.toFixed(1)+'" y="'+boxY.toFixed(1)+'" width="'+boxW.toFixed(1)+'" height="'+boxH.toFixed(1)+'" rx="4" fill="#fffdf8" fill-opacity="0.84" stroke="#d9d1c4" stroke-width="0.6"></rect>';
+  lines.forEach((line, j) => {
+    out += '<text x="'+textX.toFixed(1)+'" y="'+(boxY + padY + 8 + j*lineHeight).toFixed(1)+'" text-anchor="'+anchor+'" fill="#34302c" font-size="8.9" font-weight="650">'+line+'</text>';
+  });
+  return out;
+}
+
+function render() {
+  const xMin = 120, xMax = 830;
+  const yMin = 1.1, yMax = 5.0;
+  let out = '';
+  out += '<rect x="0" y="0" width="'+W+'" height="'+H+'" rx="8" fill="#fffdf8"></rect>';
+  out += '<text x="'+margin.left+'" y="30" fill="#222" font-size="20" font-weight="800">Absolute bucket scores scale with bucket size</text>';
+  out += '<text x="'+margin.left+'" y="52" fill="#5f5d59" font-size="12">Point size encodes number of sub-buckets. Labels show bucket names.</text>';
+
+  [200,400,600,800].forEach(tick => {
+    const x = scale(tick, xMin, xMax, margin.left, margin.left + plotW);
+    out += '<line x1="'+x+'" y1="'+margin.top+'" x2="'+x+'" y2="'+(margin.top+plotH)+'" stroke="#e4ded5" stroke-width="1"></line>';
+    out += '<text x="'+x+'" y="'+(margin.top+plotH+26)+'" text-anchor="middle" fill="#5f5d59" font-size="11">'+tick+'</text>';
+  });
+  [1,2,3,4,5].forEach(tick => {
+    const y = scale(tick, yMin, yMax, margin.top + plotH, margin.top);
+    out += '<line x1="'+margin.left+'" y1="'+y+'" x2="'+(margin.left+plotW)+'" y2="'+y+'" stroke="#e4ded5" stroke-width="1"></line>';
+    out += '<text x="'+(margin.left-12)+'" y="'+(y+4)+'" text-anchor="end" fill="#5f5d59" font-size="11">'+tick+'</text>';
+  });
+  out += '<line x1="'+margin.left+'" y1="'+(margin.top+plotH)+'" x2="'+(margin.left+plotW)+'" y2="'+(margin.top+plotH)+'" stroke="#9f978e" stroke-width="1.2"></line>';
+  out += '<line x1="'+margin.left+'" y1="'+margin.top+'" x2="'+margin.left+'" y2="'+(margin.top+plotH)+'" stroke="#9f978e" stroke-width="1.2"></line>';
+  out += '<text x="'+(margin.left+plotW/2)+'" y="'+(H-20)+'" text-anchor="middle" fill="#222" font-size="13" font-weight="700">Genes in bucket</text>';
+  out += '<text transform="translate(22 '+(margin.top+plotH/2)+') rotate(-90)" text-anchor="middle" fill="#222" font-size="13" font-weight="700">Mean absolute bucket score</text>';
+
+  const fit = regression(data);
+  const x1 = xMin, x2 = xMax;
+  const y1 = fit.intercept + fit.slope*x1;
+  const y2 = fit.intercept + fit.slope*x2;
+  out += '<line x1="'+scale(x1,xMin,xMax,margin.left,margin.left+plotW)+'" y1="'+scale(y1,yMin,yMax,margin.top+plotH,margin.top)+'" x2="'+scale(x2,xMin,xMax,margin.left,margin.left+plotW)+'" y2="'+scale(y2,yMin,yMax,margin.top+plotH,margin.top)+'" stroke="#2f2f2f" stroke-width="1.6" stroke-dasharray="6 5" opacity="0.75"></line>';
+
+  const plotBounds = {
+    left: margin.left,
+    right: margin.left + plotW,
+    top: margin.top,
+    bottom: margin.top + plotH,
+    width: plotW,
+    height: plotH
+  };
+
+  let labelLayer = '';
+  data.forEach((d, i) => {
+    const x = scale(d.genes, xMin, xMax, margin.left, margin.left + plotW);
+    const y = scale(d.meanAbs, yMin, yMax, margin.top + plotH, margin.top);
+    const r = scale(d.subBuckets, 4, 18, 6, 17);
+    out += '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+d.color+'" fill-opacity="0.74" stroke="#222" stroke-width="0.9"><title>'+d.bucket+'; genes '+d.genes+'; sub-buckets '+d.subBuckets+'; mean score '+d.meanAbs+'</title></circle>';
+    labelLayer += labelCallout(d, x, y, r, plotBounds);
+  });
+  out += labelLayer;
+
+  const legendX = margin.left + plotW + 42;
+  let legendY = margin.top + 10;
+  out += '<text x="'+legendX+'" y="'+legendY+'" fill="#222" font-size="13" font-weight="800">Score group</text>';
+  const groups = [
+    ['Immunogenicity','#0F6E56'],
+    ['Fibrosis','#993C1D'],
+    ['Angiogenesis','#378ADD'],
+    ['EMT','#993556']
+  ];
+  groups.forEach(([name,color], i) => {
+    const y = legendY + 24 + i*24;
+    out += '<circle cx="'+legendX+'" cy="'+y+'" r="6" fill="'+color+'" opacity="0.8"></circle>';
+    out += '<text x="'+(legendX+14)+'" y="'+(y+4)+'" fill="#5f5d59" font-size="12">'+name+'</text>';
+  });
+
+  legendY += 146;
+  out += '<text x="'+legendX+'" y="'+legendY+'" fill="#222" font-size="13" font-weight="800">Point size</text>';
+  [4,10,18].forEach((n, i) => {
+    const r = scale(n, 4, 18, 6, 17);
+    const y = legendY + 32 + i*44;
+    out += '<circle cx="'+(legendX+18)+'" cy="'+y+'" r="'+r+'" fill="#8f8578" opacity="0.45" stroke="#222"></circle>';
+    out += '<text x="'+(legendX+46)+'" y="'+(y+4)+'" fill="#5f5d59" font-size="12">'+n+' sub-buckets</text>';
+  });
+
+  svg.innerHTML = out;
+}
+
+render();
+</script>
+</body>
+</html>

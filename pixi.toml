@@ -1,0 +1,13 @@
+[workspace]
+channels = ["conda-forge"]
+name = "plotf"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+view = "./view_tme_visual.sh"
+
+[dependencies]
+python = ">=3.14.6,<3.15"
+pandas = ">=3.0.3,<4"
+openpyxl = ">=3.1.5,<4"

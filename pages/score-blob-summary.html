@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Archived TME Score Blob Summary</title>
+<style>
+:root {
+  --background: #f8f6f1;
+  --surface-1: #fffdf8;
+  --text-primary: #222222;
+  --text-secondary: #5f5d59;
+  --border: #d9d1c4;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+main {
+  width: min(1180px, calc(100vw - 32px));
+  margin: 32px auto;
+}
+h1 {
+  margin: 0 0 6px;
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.02;
+}
+.dek {
+  margin: 0 0 24px;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+.layout {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.viz-panel {
+  flex: 1 1 720px;
+  min-width: min(100%, 360px);
+}
+.controls-panel {
+  flex: 0 1 340px;
+  min-width: min(100%, 300px);
+  padding-top: 12px;
+}
+#scoreBalls {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.control-title {
+  margin: 0 0 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.control-row span {
+  flex: 0 0 118px;
+  color: var(--text-primary);
+  font-size: 12px;
+}
+input[type="range"] {
+  width: 100%;
+  accent-color: #3e7fa6;
+}
+.page-links {
+  margin-top: 22px;
+  font-size: 13px;
+}
+.page-links a {
+  color: #2f6791;
+  font-weight: 700;
+}
+@media (max-width: 840px) {
+  main { margin: 22px auto; }
+  .control-row { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .control-row span { flex-basis: auto; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Archived TME Score Blob Summary</h1>
+<p class="dek">Archived alternate view only: four score blobs over a low-opacity tumour silhouette, with mapped bucket labels shown as annotations. Use the bucket percentile overlay as the main plot.</p>
+<div class="layout">
+<div class="viz-panel">
+<svg id="scoreBalls" viewBox="0 0 520 440" role="img"><title>TME score blob summary</title><desc>Large low-opacity tumour silhouette with four balls that grow according to the four TME percentile scores, labelled with real buckets</desc></svg>
+</div>
+<div class="controls-panel">
+<div id="scoreControls"></div>
+<div class="page-links"><a href="../index.html">Back to overview</a></div>
+</div>
+</div>
+</main>
+<script>
+const axes = [
+  {
+    name:'Angiogenesis',
+    color:'#378ADD',
+    score:72,
+    buckets:['Angiogenic Signalling','Endothelial Cell Signature','Hypoxia Signalling']
+  },
+  {
+    name:'Immunogenicity',
+    color:'#0F6E56',
+    score:91,
+    buckets:['Antigen Presentation','Inflammation','Innate Immune Activation','TME/Stroma']
+  },
+  {
+    name:'Fibrosis',
+    color:'#993C1D',
+    score:86,
+    buckets:['Cell-Matrix Adhesion','ECM Remodelling','Fibroblast Signature','Pro-Fibrotic Signalling']
+  },
+  {
+    name:'EMT',
+    color:'#993556',
+    score:38,
+    buckets:['EMT Initiation','EMT Maintenance','Epithelial Markers','Mesenchymal Markers']
+  }
+];
+
+function blobPt(centerX, centerY, r, angleDeg){
+  const rad=angleDeg*Math.PI/180;
+  return [centerX+r*Math.cos(rad), centerY+r*Math.sin(rad)];
+}
+
+function tumourSilhouettePath(centerX, centerY, radius, phase=0){
+  let d='';
+  const steps=160;
+  for(let s=0;s<=steps;s++){
+    const angle=s*360/steps;
+    const rad=angle*Math.PI/180;
+    const diagonalArms=(1-Math.cos(4*rad))/2;
+    const easedArms=diagonalArms*diagonalArms*(3-2*diagonalArms);
+    const inBetweenValley=Math.pow(1-diagonalArms,1.35);
+    const curve=0.73+0.28*easedArms-0.1*inBetweenValley;
+    const ripple=1+0.018*Math.sin(rad*3+phase)+0.014*Math.sin(rad*7+1.7);
+    const [x,y]=blobPt(centerX, centerY, radius*curve*ripple, angle);
+    d+=(s===0?'M':'L')+x.toFixed(1)+' '+y.toFixed(1)+' ';
+  }
+  return d+'Z';
+}
+
+function renderScoreBalls(){
+  const positions=[
+    {x:190,y:150,labelX:62,labelY:62,anchor:'start'},
+    {x:330,y:150,labelX:374,labelY:62,anchor:'start'},
+    {x:330,y:290,labelX:374,labelY:330,anchor:'start'},
+    {x:190,y:290,labelX:62,labelY:330,anchor:'start'}
+  ];
+  let svg='';
+  svg+='<path d="'+tumourSilhouettePath(260,220,174,0.4)+'" fill="#8f8578" opacity="0.12" stroke="#8f8578" stroke-width="1.2" stroke-opacity="0.18"></path>';
+  svg+='<path d="'+tumourSilhouettePath(260,220,116,2.1)+'" fill="#8f8578" opacity="0.055" stroke="none"></path>';
+  axes.forEach((ax,i)=>{
+    const pos=positions[i];
+    const radius=14+(ax.score/100)*42;
+    svg+='<circle cx="'+pos.x+'" cy="'+pos.y+'" r="'+radius.toFixed(1)+'" fill="'+ax.color+'" opacity="0.66" stroke="#262626" stroke-width="1.2"><title>'+ax.name+' percentile '+ax.score+'</title></circle>';
+    svg+='<text x="'+pos.x+'" y="'+(pos.y-5).toFixed(1)+'" text-anchor="middle" fill="#202020" font-size="12" font-weight="800">'+ax.name+'</text>';
+    svg+='<text x="'+pos.x+'" y="'+(pos.y+12).toFixed(1)+'" text-anchor="middle" fill="#202020" font-size="12" font-weight="700">'+ax.score+'</text>';
+    svg+='<text x="'+pos.labelX+'" y="'+pos.labelY+'" text-anchor="'+pos.anchor+'" fill="#2a2a2a" font-size="10" font-weight="700">'+ax.name+' buckets</text>';
+    ax.buckets.forEach((bucket,j)=>{
+      const y=pos.labelY+15+(j*13);
+      svg+='<text x="'+pos.labelX+'" y="'+y+'" text-anchor="'+pos.anchor+'" fill="#5f5d59" font-size="8.4">'+bucket+'</text>';
+    });
+  });
+  document.getElementById('scoreBalls').innerHTML=svg;
+}
+
+function render(){
+  renderScoreBalls();
+}
+
+let scoreHtml='<div class="control-title">Axis percentile scores</div>';
+axes.forEach((ax,i)=>{
+  scoreHtml+='<div class="control-row"><span>'+ax.name+'</span><input type="range" min="0" max="100" value="'+ax.score+'" oninput="axes['+i+'].score=+this.value;render()"></div>';
+});
+document.getElementById('scoreControls').innerHTML=scoreHtml;
+render();
+</script>
+</body>
+</html>

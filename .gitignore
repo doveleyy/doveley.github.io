@@ -1,0 +1,16 @@
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+
+# Local/editor state
+.claude/
+.codex/
+.agents/
+.DS_Store
+
+# Python/runtime artifacts
+__pycache__/
+*.py[cod]
+
+# Large local-only source material
+local/
