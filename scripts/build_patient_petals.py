@@ -6,11 +6,15 @@ A plain script tag is used instead of ``fetch`` so the page keeps working over
 
 Each bucket carries two independent values:
 
-``v``    the share input. Currently the raw bucket score, which already sums to the
-         axis score exactly. Swap in bucket-level normalised values here; the plot
-         only ever renders ``100 * v / sum(v)``, so the shares total 100% either way.
+``v``    the share input: the raw bucket score, which already sums to the axis score
+         exactly. The plot renders ``100 * (v / nSub) / sum(v / nSub)``, so the shares
+         total 100% whatever units ``v`` is in.
 ``pct``  the bucket's percentile within the baseline cohort, used for the legend
          bullet strip. Never feeds the geometry.
+
+Per-axis ``nSub`` in the schema is the sub-bucket count for each bucket. Absolute bucket
+score scales with sub-bucket count (r = 0.987), so dividing by it before taking shares
+stops big buckets dominating a quadrant purely because they are big.
 """
 
 from __future__ import annotations
@@ -28,6 +32,7 @@ from analyze_gc_pd1_scores import GROUPS, DISPLAY_TO_COLUMN
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "data/outputs/patient_petals.js"
+SUBBUCKETS = ROOT / "data/outputs/tme_subbucket_mapping.csv"
 BASELINE_LABEL = "GC PD-1 harmonised cohort"
 
 AXIS_ORDER = ["angiogenesis", "immunogenicity", "fibrosis", "emt"]
@@ -52,8 +57,19 @@ def largest_remainder(values: list[float], total: int = 100) -> list[int]:
     return floors
 
 
+def sub_bucket_counts() -> dict[str, int]:
+    """Sub-buckets per bucket, keyed by the bucket's display name."""
+    mapping = pd.read_csv(SUBBUCKETS)
+    counts = mapping.groupby("bucket")["sub_bucket_id"].nunique().to_dict()
+    missing = [name for name in DISPLAY_TO_COLUMN if name not in counts]
+    assert not missing, f"no sub-buckets found for: {missing}"
+    assert all(counts[name] > 0 for name in DISPLAY_TO_COLUMN), "zero sub-bucket count"
+    return counts
+
+
 def main() -> None:
     df = pd.read_csv(ROOT / "data/gc_pd1_harmonised.csv")
+    n_sub = sub_bucket_counts()
     score_columns = list(GROUPS) + [c for buckets in GROUPS.values() for c in buckets]
 
     assert not df["sample_id"].duplicated().any(), "duplicate sample_id"
@@ -68,7 +84,11 @@ def main() -> None:
 
     schema = {
         "axes": [
-            {"key": axis, "buckets": [COLUMN_TO_DISPLAY[c] for c in GROUPS[axis]]}
+            {
+                "key": axis,
+                "buckets": [COLUMN_TO_DISPLAY[c] for c in GROUPS[axis]],
+                "nSub": [n_sub[COLUMN_TO_DISPLAY[c]] for c in GROUPS[axis]],
+            }
             for axis in AXIS_ORDER
         ]
     }
@@ -79,7 +99,9 @@ def main() -> None:
         for axis in AXIS_ORDER:
             buckets = GROUPS[axis]
             values = [round(float(row[c]), 4) for c in buckets]
-            shares = largest_remainder(values)
+            # Mirrors axisShares() in index.html: normalise by sub-bucket count first.
+            normalised = [v / n_sub[COLUMN_TO_DISPLAY[c]] for v, c in zip(values, buckets)]
+            shares = largest_remainder(normalised)
             assert sum(shares) == 100, f"{row['sample_id']} / {axis}: shares sum to {sum(shares)}"
             axes_payload.append(
                 {
@@ -120,13 +142,15 @@ def main() -> None:
 
     for axis in AXIS_ORDER:
         buckets = GROUPS[axis]
-        shares = df[buckets].div(df[axis], axis=0) * 100
+        per_sub = df[buckets].div([n_sub[COLUMN_TO_DISPLAY[c]] for c in buckets], axis=1)
+        shares = per_sub.div(per_sub.sum(axis=1), axis=0) * 100
         print(
             f"\n{axis}  axis score {df[axis].min():.2f}-{df[axis].max():.2f}  "
             f"axis percentile {percentiles[axis].min()}-{percentiles[axis].max()}"
         )
         summary = pd.DataFrame(
             {
+                "n_sub": pd.Series({c: n_sub[COLUMN_TO_DISPLAY[c]] for c in buckets}),
                 "share_mean": shares.mean(),
                 "share_sd": shares.std(),
                 "share_min": shares.min(),

@@ -6,6 +6,11 @@ Each score petal outlines the selected patient's TME score percentile. Inside th
 split the score by share, so buckets stay contained within their score and their displayed percentages total
 100%. Bucket baseline percentiles are shown separately as small bars in the legend.
 
+Shares are normalised by sub-bucket count. Scoring happens at the sub-bucket level, so a bucket's raw score
+scales with how many sub-buckets it holds (r = 0.987 against mean absolute bucket score). Each bucket score
+is divided by its sub-bucket count before shares are taken, which stops big buckets dominating a quadrant
+purely because they are big. The pre-normalisation plot is archived at `pages/tme-bucket-raw-share.html`.
+
 ## Preview locally
 
 ```bash
@@ -28,6 +33,7 @@ If port `8000` is busy:
 
 - `index.html` - main page: TME Bucket Plot, reading notes, gene explorer link, and archive links.
 - `pages/gene-set-explorer.html` - filterable mapping table for genes, buckets, and subbuckets.
+- `pages/tme-bucket-raw-share.html` - archived snapshot of the main plot before sub-bucket normalisation.
 - `pages/score-size-bias.html` - archived rationale page for bucket-size bias and raw contribution examples.
 - `pages/score-blob-summary.html` - archived alternate visual.
 - `data/` - source CSVs and bucket mapping outputs used to generate/check the figures.
@@ -45,7 +51,8 @@ pixi run build-data
 ```
 
 The generator asserts that every axis score equals the sum of its bucket scores, that there are no missing
-score values, and that every displayed bucket share total is exactly 100%.
+score values, that every bucket has a sub-bucket count in `data/outputs/tme_subbucket_mapping.csv`, and that
+every displayed bucket share total is exactly 100%.
 
 ## Optional analysis helper
 

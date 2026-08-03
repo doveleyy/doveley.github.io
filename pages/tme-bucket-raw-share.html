@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TME Bucket Plot</title>
+<title>Archived TME Bucket Plot: Raw Share of Score</title>
 <style>
 :root {
   --background: #f8f6f1;
@@ -253,8 +253,8 @@ a:hover {
 </head>
 <body>
 <main>
-<h1>TME Bucket Plot</h1>
-<p class="dek">A patient-level view of the tumour microenvironment scores and the gene-set buckets that make them up. Each quadrant is one TME score; its outline shows the score percentile, while the wedges inside show how the buckets contribute to that score. Because scoring happens at the sub-bucket level, each bucket score is divided by its sub-bucket count before shares are taken.</p>
+<h1>Archived TME Bucket Plot: Raw Share of Score</h1>
+<p class="dek">Archived snapshot of the original main plot, kept for comparison. Bucket shares here are the raw bucket score over the axis total, so buckets built from more sub-buckets take a larger slice simply because they are bigger. The current main plot divides each bucket score by its sub-bucket count before taking shares.</p>
 <h2 class="sr-only">Organic tumour shape divided into four TME score quadrants, with gene-set buckets dividing each quadrant by share</h2>
 <noscript><p class="load-error">This page draws the plot with JavaScript, which is disabled in this browser.</p></noscript>
 <p class="load-error" id="loadError" hidden></p>
@@ -273,7 +273,7 @@ a:hover {
 <div id="scoreControls"></div>
 <details>
 <summary>Bucket share inputs</summary>
-<p class="control-hint">These sliders adjust the raw bucket input values. The plot divides each by the bucket's sub-bucket count and redraws it as a share of the score total, so the wedges in a quadrant always add up to 100%.</p>
+<p class="control-hint">These sliders adjust the bucket input values. The plot redraws each bucket as its share of the score total, so the wedges in a quadrant always add up to 100%.</p>
 <div id="bucketControls"></div>
 </details>
 </div>
@@ -282,41 +282,27 @@ a:hover {
 <h2 id="rationale-title">How To Read It</h2>
 <ul class="rationale-list">
   <li>The outer shape shows the four TME score percentiles for the selected patient: Angiogenesis, Immunogenicity, Fibrosis and EMT.</li>
-  <li>Inside each score, bucket wedges split the quadrant by normalised share of that score. The shares are rounded so the displayed bucket values always total 100% within each score.</li>
-  <li>Scoring happens at the sub-bucket level, so a bucket's raw score scales with how many sub-buckets it holds (r = 0.987 against mean absolute bucket score). Each bucket score is therefore divided by its sub-bucket count, shown in brackets after the bucket name, before shares are taken.</li>
+  <li>Inside each score, bucket wedges split the quadrant by share of that score. The shares are rounded so the displayed bucket values always total 100% within each score.</li>
   <li>Bucket wedges are clipped inside their score outline, so a bucket can never visually exceed the score it belongs to.</li>
-  <li>The legend separates the two readings: <strong>Normalised share</strong> is the printed percentage, while <strong>vs baseline</strong> is the small bar showing the bucket percentile against the GC PD-1 harmonised cohort. The baseline bars are unchanged by the normalisation.</li>
-  <li>The bucket input values are kept separate from the drawing logic, so the sliders still adjust raw bucket scores; the normalisation is applied when shares are computed.</li>
-</ul>
-</section>
-
-<section class="section" aria-labelledby="explorer-title">
-<h2 id="explorer-title">Gene Set Explorer</h2>
-<ul class="link-list">
-  <li>
-    <a href="pages/gene-set-explorer.html">Explore bucket genes</a>
-    <span>Look up the genes behind each score, bucket and subbucket in the mapping used by the plot.</span>
-  </li>
+  <li>The legend separates the two readings: <strong>Share of score</strong> is the printed percentage, while <strong>vs baseline</strong> is the small bar showing the bucket percentile against the GC PD-1 harmonised cohort.</li>
+  <li>Shares on this page are unnormalised. Sub-bucket count per bucket correlates with mean absolute bucket score at <strong>r = 0.987</strong>, so a bucket like Pro-Fibrotic Signalling (16 sub-buckets) reads large next to Fibroblast Signature (4 sub-buckets) largely because of its size.</li>
 </ul>
 </section>
 
 <section class="section" aria-labelledby="archive-title">
-<h2 id="archive-title">Archive</h2>
+<h2 id="archive-title">Related</h2>
 <ul class="link-list">
   <li>
-    <a href="pages/tme-bucket-raw-share.html">TME bucket plot: raw share of score</a>
-    <span>Archived snapshot of the same plot before sub-bucket normalisation, where shares are the raw bucket score over the axis total.</span>
+    <a href="../index.html">TME Bucket Plot</a>
+    <span>Current main plot, with shares normalised by sub-bucket count.</span>
   </li>
   <li>
-    <a href="pages/score-size-bias.html">Archived rationale: bucket size bias</a>
-    <span>Earlier design note showing why raw bucket score and raw contribution views were not used as the main visual encoding.</span>
-  </li>
-  <li>
-    <a href="pages/score-blob-summary.html">Score blob summary</a>
-    <span>Archived alternate view that represented the four score percentiles as separate blobs.</span>
+    <a href="score-size-bias.html">Archived rationale: bucket size bias</a>
+    <span>The evidence behind the normalisation: bucket size versus mean absolute bucket score.</span>
   </li>
 </ul>
 </section>
+<div class="page-links"><a href="../index.html">Back to TME Bucket Plot</a></div>
 </main>
 <script>
 // Surface any script failure in the page itself. A silent exception used to leave
@@ -330,17 +316,16 @@ window.addEventListener('error', function (event) {
     (event.filename ? ' (' + event.filename + ':' + event.lineno + ')' : '');
 });
 </script>
-<script src="data/outputs/patient_petals.js"></script>
+<script src="../data/outputs/patient_petals.js"></script>
 <script>
 // Axis order and colours must match the schema emitted by scripts/build_patient_petals.py.
 // The values below are an RHF1545 snapshot, used only if the generated data file is
 // missing; selecting a patient overwrites score, v and pct on every axis.
 //
-// v is the raw bucket score and nSub is the bucket's sub-bucket count. The plot renders
-// 100 * (v / nSub) / sum(v / nSub), so shares total 100% whatever units v is in. Absolute
-// bucket score scales with sub-bucket count, so dividing by nSub keeps a big bucket from
-// taking a big wedge purely because it is big. pct is the percentile vs the baseline
-// cohort and drives the legend bullet only - it never feeds the geometry.
+// v is the share input. Swap in bucket-level normalised values here and in the
+// generator; the plot only ever renders 100 * v / sum(v), so the shares total 100%
+// whatever v is. pct is the percentile vs the baseline cohort and drives the legend
+// bullet only - it never feeds the geometry.
 const axes = [
   {
     name:'Angiogenesis',
@@ -348,9 +333,9 @@ const axes = [
     palette:['#378add','#499cef','#5baeff'],
     score:90,
     buckets:[
-      {name:'Angiogenic Signalling', v:4.292, nSub:14, pct:89},
-      {name:'Endothelial Cell Signature', v:4.7887, nSub:14, pct:91},
-      {name:'Hypoxia Signalling', v:2.323, nSub:7, pct:74}
+      {name:'Angiogenic Signalling', v:4.292, pct:89},
+      {name:'Endothelial Cell Signature', v:4.7887, pct:91},
+      {name:'Hypoxia Signalling', v:2.323, pct:74}
     ]
   },
   {
@@ -359,10 +344,10 @@ const axes = [
     palette:['#0f6e56','#218068','#33927a','#45a48c'],
     score:34,
     buckets:[
-      {name:'Antigen Presentation', v:1.6145, nSub:7, pct:16},
-      {name:'Inflammation', v:3.7027, nSub:13, pct:49},
-      {name:'Innate Immune Activation', v:3.6316, nSub:13, pct:34},
-      {name:'TME/Stroma', v:2.4265, nSub:8, pct:49}
+      {name:'Antigen Presentation', v:1.6145, pct:16},
+      {name:'Inflammation', v:3.7027, pct:49},
+      {name:'Innate Immune Activation', v:3.6316, pct:34},
+      {name:'TME/Stroma', v:2.4265, pct:49}
     ]
   },
   {
@@ -371,10 +356,10 @@ const axes = [
     palette:['#993c1d','#ab4e2f','#bd6041','#cf7253'],
     score:95,
     buckets:[
-      {name:'Cell-Matrix Adhesion', v:2.7908, nSub:8, pct:90},
-      {name:'ECM Remodelling', v:2.5545, nSub:7, pct:99},
-      {name:'Fibroblast Signature', v:1.7668, nSub:4, pct:91},
-      {name:'Pro-Fibrotic Signalling', v:4.5831, nSub:16, pct:92}
+      {name:'Cell-Matrix Adhesion', v:2.7908, pct:90},
+      {name:'ECM Remodelling', v:2.5545, pct:99},
+      {name:'Fibroblast Signature', v:1.7668, pct:91},
+      {name:'Pro-Fibrotic Signalling', v:4.5831, pct:92}
     ]
   },
   {
@@ -383,24 +368,14 @@ const axes = [
     palette:['#993556','#ab4768','#bd597a','#cf6b8c'],
     score:78,
     buckets:[
-      {name:'EMT Initiation', v:3.6252, nSub:13, pct:82},
-      {name:'EMT Maintenance', v:4.7631, nSub:18, pct:57},
-      {name:'Epithelial Markers', v:1.3684, nSub:4, pct:15},
-      {name:'Mesenchymal Markers', v:3.1008, nSub:8, pct:98}
+      {name:'EMT Initiation', v:3.6252, pct:82},
+      {name:'EMT Maintenance', v:4.7631, pct:57},
+      {name:'Epithelial Markers', v:1.3684, pct:15},
+      {name:'Mesenchymal Markers', v:3.1008, pct:98}
     ]
   }
 ];
 const cohort = window.PATIENT_PETALS || null;
-// Sub-bucket counts are static metadata, so they are taken from the schema once rather
-// than per patient. Older data files without nSub fall back to the snapshot values above.
-if(cohort && cohort.schema){
-  cohort.schema.axes.forEach((spec,i)=>{
-    if(!spec.nSub || !axes[i]) return;
-    axes[i].buckets.forEach((bucket,j)=>{
-      if(spec.nSub[j] > 0) bucket.nSub=spec.nSub[j];
-    });
-  });
-}
 const BASELINE_LABEL = cohort
   ? cohort.baselineLabel + ' (n = ' + cohort.cohortSize + ')'
   : 'baseline cohort';
@@ -441,10 +416,7 @@ function largestRemainder(values, total=100){
   return floors;
 }
 function axisShares(axis){
-  // Normalise each bucket score by its sub-bucket count before taking shares, so the
-  // wedges compare per-sub-bucket signal rather than bucket size. Mirrors the
-  // normalised branch of build_patient_petals.py.
-  const values=axis.buckets.map(b=>Math.max(0,b.v)/Math.max(1,b.nSub||1));
+  const values=axis.buckets.map(b=>Math.max(0,b.v));
   const weight=values.reduce((s,v)=>s+v,0);
   if(weight<=0) return null;
   return {fractions:values.map(v=>v/weight), display:largestRemainder(values)};
@@ -478,7 +450,7 @@ function renderQuadrantLabels(){
     svg+='<line x1="'+pos.x+'" y1="'+(pos.y+9)+'" x2="'+(pos.x+pos.width)+'" y2="'+(pos.y+9)+'" stroke="'+ax.color+'" stroke-width="1.4" opacity="0.58"></line>';
     const guideY=pos.y+27;
     svg+='<text x="'+(pos.x+nameX)+'" y="'+guideY+'" fill="#5f5d59" font-size="8.6" font-weight="800" letter-spacing="0.05em">BUCKET</text>';
-    svg+='<text x="'+(pos.x+shareX)+'" y="'+guideY+'" text-anchor="end" fill="#5f5d59" font-size="8.6" font-weight="800" letter-spacing="0.05em">NORMALISED SHARE</text>';
+    svg+='<text x="'+(pos.x+shareX)+'" y="'+guideY+'" text-anchor="end" fill="#5f5d59" font-size="8.6" font-weight="800" letter-spacing="0.05em">SHARE OF SCORE</text>';
     svg+='<text x="'+(pos.x+barX)+'" y="'+guideY+'" fill="#5f5d59" font-size="8.6" font-weight="800" letter-spacing="0.05em">VS BASELINE</text>';
     ax.buckets.forEach((bucket,j)=>{
       const fill=bucketFill(ax,j);
@@ -487,18 +459,13 @@ function renderQuadrantLabels(){
       svg+='<rect x="'+pos.x+'" y="'+(y-8)+'" width="9" height="9" rx="2" fill="'+fill+'"></rect>';
       // Shrink long names rather than let them run into the share column. The 0.66
       // em-per-character estimate is deliberately wide so it holds for fallback fonts too.
-      // The bracketed sub-bucket count is the divisor behind the normalised share, so it
-      // is budgeted into the same width rather than allowed to overflow.
-      // Non-breaking space because SVG collapses a tspan's leading whitespace.
-      const subLabel=' ('+(bucket.nSub||1)+')';
-      const nameSize=Math.min(9.6,(shareX-22)/((bucket.name.length+subLabel.length)*0.66));
-      svg+='<text x="'+(pos.x+nameX)+'" y="'+y+'" fill="#2f2f2f" font-size="'+nameSize.toFixed(2)+'" font-weight="650">'+bucket.name+
-        '<tspan fill="#8a837a" font-weight="600">'+subLabel+'</tspan></text>';
+      const nameSize=Math.min(9.6,(shareX-22)/(bucket.name.length*0.66));
+      svg+='<text x="'+(pos.x+nameX)+'" y="'+y+'" fill="#2f2f2f" font-size="'+nameSize.toFixed(2)+'" font-weight="650">'+bucket.name+'</text>';
       svg+='<text x="'+(pos.x+shareX)+'" y="'+y+'" text-anchor="end" fill="#1f1f1f" font-size="10.5" font-weight="800">'+share+'</text>';
       svg+=bulletStrip(pos.x+barX, y, bucket.pct, fill);
     });
   });
-  svg+='<text x="'+cx+'" y="586" text-anchor="middle" fill="#5f5d59" font-size="11">Normalised share divides each bucket score by its sub-bucket count, shown in brackets. Bars show percentile vs '+BASELINE_LABEL+'; the line marks the cohort median.</text>';
+  svg+='<text x="'+cx+'" y="586" text-anchor="middle" fill="#5f5d59" font-size="11">Bucket rows show share of score and percentile vs '+BASELINE_LABEL+'; the line marks the cohort median.</text>';
   return svg;
 }
 function render(){
@@ -549,8 +516,8 @@ function render(){
       }
       d+='Z';
       const share=shares ? shares.display[j] : null;
-      const shareText=share===null ? 'no share data' : share+'% normalised share of '+ax.name;
-      svg+='<path d="'+d+'" fill="'+fill+'" fill-opacity="'+(shares?1:0.35)+'" stroke="'+WEDGE_STROKE+'" stroke-width="0.7"><title>'+ax.name+' - '+b.name+' ('+shareText+' across '+(b.nSub||1)+' sub-buckets, percentile '+b.pct+' vs '+BASELINE_LABEL+')</title></path>';
+      const shareText=share===null ? 'no share data' : share+'% of '+ax.name;
+      svg+='<path d="'+d+'" fill="'+fill+'" fill-opacity="'+(shares?1:0.35)+'" stroke="'+WEDGE_STROKE+'" stroke-width="0.7"><title>'+ax.name+' - '+b.name+' ('+shareText+', percentile '+b.pct+' vs '+BASELINE_LABEL+')</title></path>';
     });
   });
   svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+coreR+'" fill="'+CORE_FILL+'" stroke="'+RULE_COLOR+'" stroke-width="0.5"/>';
