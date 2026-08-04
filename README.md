@@ -2,14 +2,16 @@
 
 Static GitHub Pages prototype for the TME Bucket Plot.
 
-Each score petal outlines the selected patient's TME score percentile. Inside that outline, bucket wedges
-split the score by share, so buckets stay contained within their score and their displayed percentages total
-100%. Bucket baseline percentiles are shown separately as small bars in the legend.
+The main plot is a bucket **percentile** view. Each quadrant is one TME score; a faint outline bulges with the
+axis score percentile, and inside it every bucket gets an equal angular slot whose petal **length** encodes
+that bucket's percentile against the GC PD-1 harmonised cohort. A dashed contour marks the 50th percentile, so
+a petal reaching past it sits above the cohort median. The legend outside the plot lists each bucket name and
+its percentile value.
 
-Shares are normalised by sub-bucket count. Scoring happens at the sub-bucket level, so a bucket's raw score
-scales with how many sub-buckets it holds (r = 0.987 against mean absolute bucket score). Each bucket score
-is divided by its sub-bucket count before shares are taken, which stops big buckets dominating a quadrant
-purely because they are big. The pre-normalisation plot is archived at `pages/tme-bucket-raw-share.html`.
+Percentiles are used instead of raw bucket scores because absolute scores scale strongly with bucket size
+(sub-bucket count correlates with mean absolute bucket score at r = 0.987), so raw values are poor at showing
+patient-specific differences. Two earlier share-based views are archived at `pages/tme-bucket-normalised-share.html`
+(shares normalised by sub-bucket count) and `pages/tme-bucket-raw-share.html` (raw shares).
 
 ## Preview locally
 
@@ -33,7 +35,8 @@ If port `8000` is busy:
 
 - `index.html` - main page: TME Bucket Plot, reading notes, gene explorer link, and archive links.
 - `pages/gene-set-explorer.html` - filterable mapping table for genes, buckets, and subbuckets.
-- `pages/tme-bucket-raw-share.html` - archived snapshot of the main plot before sub-bucket normalisation.
+- `pages/tme-bucket-normalised-share.html` - archived share-based view (shares normalised by sub-bucket count).
+- `pages/tme-bucket-raw-share.html` - archived share-based view before sub-bucket normalisation.
 - `pages/score-size-bias.html` - archived rationale page for bucket-size bias and raw contribution examples.
 - `pages/score-blob-summary.html` - archived alternate visual.
 - `data/` - source CSVs and bucket mapping outputs used to generate/check the figures.
