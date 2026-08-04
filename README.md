@@ -2,16 +2,15 @@
 
 Static GitHub Pages prototype for the TME Bucket Plot.
 
-The main plot is a bucket **percentile** view. Each quadrant is one TME score; a faint outline bulges with the
-axis score percentile, and inside it every bucket gets an equal angular slot whose petal **length** encodes
-that bucket's percentile against the GC PD-1 harmonised cohort. A dashed contour marks the 50th percentile, so
-a petal reaching past it sits above the cohort median. The legend outside the plot lists each bucket name and
-its percentile value.
+The main page shows the selected patient as a single four-lobed **tumour**. Each lobe is one TME score, drawn as
+a soft envelope reaching out to the axis score percentile with a faint rim. Inside each lobe, gene-set bucket
+petals use bucket percentiles against the GC PD-1 harmonised cohort, rebased within each lobe into integer
+weights that total **100%**. The largest rebased bucket reaches the score envelope and every other bucket stays
+inside it. There is no percentile reference line.
 
 Percentiles are used instead of raw bucket scores because absolute scores scale strongly with bucket size
 (sub-bucket count correlates with mean absolute bucket score at r = 0.987), so raw values are poor at showing
-patient-specific differences. Two earlier share-based views are archived at `pages/tme-bucket-normalised-share.html`
-(shares normalised by sub-bucket count) and `pages/tme-bucket-raw-share.html` (raw shares).
+patient-specific differences. Earlier share-based views are archived under `pages/`.
 
 ## Preview locally
 
@@ -33,7 +32,7 @@ If port `8000` is busy:
 
 ## Site structure
 
-- `index.html` - main page: TME Bucket Plot, reading notes, gene explorer link, and archive links.
+- `index.html` - main page: single tumour length plot, reading notes, gene explorer link, and archive links.
 - `pages/gene-set-explorer.html` - filterable mapping table for genes, buckets, and subbuckets.
 - `pages/tme-bucket-normalised-share.html` - archived share-based view (shares normalised by sub-bucket count).
 - `pages/tme-bucket-raw-share.html` - archived share-based view before sub-bucket normalisation.

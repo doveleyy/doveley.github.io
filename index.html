@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TME Bucket Percentile Plot</title>
+<title>TME Bucket Tumour Plot</title>
 <style>
 :root {
   --background: #f8f6f1;
@@ -237,9 +237,9 @@ a:hover {
 </head>
 <body>
 <main>
-<h1>TME Bucket Percentile Plot</h1>
-<p class="dek">A patient-level view of the tumour microenvironment scores and the gene-set buckets inside them. Each quadrant is one TME score; the faint outline shows the axis score percentile, and inside it each bucket petal reaches out by its own percentile against the cohort. The dashed contour marks the 50th percentile, so a petal past it is above the cohort median.</p>
-<h2 class="sr-only">Organic tumour shape divided into four TME score quadrants, with gene-set bucket petals whose length encodes each bucket's percentile and a dashed 50th-percentile reference contour</h2>
+<h1>TME Bucket Tumour Plot</h1>
+<p class="dek">A patient-level view of the tumour microenvironment scores and the gene-set buckets inside them. The four faint outer lobes are the TME scores. Within each lobe, bucket percentiles are rebased into weights that add to 100%, and the inner petals show those within-score proportions.</p>
+<h2 class="sr-only">Organic tumour shape divided into four TME score lobes, with bucket weights rebased to sum to 100 percent within each lobe</h2>
 <noscript><p class="load-error">This page draws the plot with JavaScript, which is disabled in this browser.</p></noscript>
 <p class="load-error" id="loadError" hidden></p>
 <div class="layout" id="plot">
@@ -251,13 +251,13 @@ a:hover {
   <button class="small-button" id="resetPatient" type="button" hidden>Reset to patient</button>
   <span class="patient-note" id="patientNote"></span>
 </div>
-<svg id="tumour" viewBox="0 0 1040 700" role="img"><title>TME bucket percentile plot</title><desc>Tumour profile split into four score quadrants. The faint outline shows axis percentile; each bucket petal's length encodes its percentile against the cohort, and a dashed contour marks the 50th percentile.</desc></svg>
+<svg id="tumour" viewBox="0 0 1040 700" role="img"><title>TME bucket tumour plot</title><desc>Tumour profile split into four score lobes. Within each lobe, bucket percentile weights are rebased to sum to 100 percent.</desc></svg>
 </div>
 <div class="controls-panel">
 <div id="scoreControls"></div>
 <details>
 <summary>Bucket percentile controls</summary>
-<p class="control-hint">These sliders set each bucket's percentile against the cohort. The petal reaches further out the higher the percentile; the dashed contour is fixed at the 50th percentile.</p>
+<p class="control-hint">These sliders set each bucket's percentile against the cohort. The plot rebases those values within each TME lobe so the displayed bucket weights add to exactly 100%.</p>
 <div id="bucketControls"></div>
 </details>
 </div>
@@ -265,9 +265,9 @@ a:hover {
 <section class="section" aria-labelledby="rationale-title">
 <h2 id="rationale-title">How To Read It</h2>
 <ul class="rationale-list">
-  <li>The four quadrants are the TME scores for the selected patient: Angiogenesis, Immunogenicity, Fibrosis and EMT. The faint quadrant outline bulges with the axis score percentile.</li>
-  <li>Inside each quadrant, every bucket gets an equal angular slot. What varies is the petal's <strong>length</strong>: it reaches out by that bucket's percentile against the GC PD-1 harmonised cohort.</li>
-  <li>The dashed contour is the <strong>50th percentile</strong> (cohort median). A bucket petal reaching past it sits above the median; one falling short of it sits below.</li>
+  <li>The four faint outer lobes are the TME scores for the selected patient: Angiogenesis, Immunogenicity, Fibrosis and EMT. Each envelope reaches out to its axis score percentile, with a faint rim marking that edge.</li>
+  <li>Inside each lobe, every bucket gets an equal angular slot. The bucket percentiles are rebased within that lobe, producing <strong>bucket weights that add to 100%</strong>. The largest rebased weight reaches the outer score envelope and the remaining petals are proportional to it.</li>
+  <li>There is no percentile reference line: the 100% total is a within-score composition, while the faint outer lobe remains the TME score percentile.</li>
   <li>Percentiles are used instead of raw bucket scores because absolute scores scale strongly with bucket size, so raw values are poor at showing patient-specific differences.</li>
   <li>The legend outside the plot lists each bucket name with its percentile value, so names and numbers stay on one line without covering the petals.</li>
 </ul>
@@ -323,9 +323,9 @@ window.addEventListener('error', function (event) {
 // The values below are an RHF1545-era snapshot, used only if the generated data file is
 // missing; selecting a patient overwrites the axis score and every bucket percentile.
 //
-// Each bucket carries `percentile`, its rank vs the baseline cohort. That single number
-// drives the petal length - there is no share or contribution maths here. subBuckets and
-// nGenes are static metadata shown only in the hover tooltip.
+// Each bucket carries `percentile`, its rank vs the baseline cohort. Within each axis,
+// those values are rebased to weights that sum to 100%; their relative sizes determine
+// petal length. subBuckets and nGenes are static metadata shown only in the tooltip.
 const axes = [
   {
     name:'Angiogenesis',
@@ -379,34 +379,48 @@ const cohort = window.PATIENT_PETALS || null;
 const BASELINE_LABEL = cohort
   ? cohort.baselineLabel + ' (n = ' + cohort.cohortSize + ')'
   : 'baseline cohort';
-// Percentile that draws the dashed reference contour.
-const MEDIAN_PCT = 50;
 const cx=520, cy=350, baseR=86, extraR=158, coreR=32, axisGap=5;
 // Literal hex rather than var(--...) so the SVG also renders correctly when exported
 // standalone, outside the page's :root custom properties.
 const RULE_COLOR='#d9d1c4';
 const CORE_FILL='#fffdf8';
 const WEDGE_STROKE='#f0ebe2';
-const MEDIAN_COLOR='#4a4640';
 function shade(hex,amt){const n=parseInt(hex.slice(1),16);let r=(n>>16)+amt,g=(n>>8&255)+amt,b=(n&255)+amt;r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));return '#'+(1<<24|r<<16|g<<8|b).toString(16).slice(1);}
 function bucketFill(axis, bucketIndex){return axis.palette[bucketIndex % axis.palette.length];}
-// One radius function for every contour: the axis envelope (percentile = axis score),
-// each bucket petal (percentile = bucket percentile) and the median line (percentile = 50)
-// share the same organic shape, so they are directly comparable.
+// middleLift gives each lobe its organic bulge (thin near the axis gaps, full in the
+// middle). It is symmetric in t, so the lobe is mirror-symmetric about its own midline.
+function middleLift(t){return 0.84+0.16*Math.sin(Math.PI*t);}
+// Radius for a score envelope at a given percentile and angle. A small absolute-angle
+// undulation keeps the outer silhouette organic.
 function radiusAt(axisIndex, percentile, angle){
   const a=((angle%360)+360)%360;
   const start=-90+axisIndex*90+axisGap;
   const end=-90+(axisIndex+1)*90-axisGap;
   const t=(angle-start)/(end-start);
-  const middleLift=0.84+0.16*Math.sin(Math.PI*t);
-  let r=(baseR+(Math.max(0,Math.min(100,percentile))/100)*extraR)*middleLift;
+  let r=(baseR+(Math.max(0,Math.min(100,percentile))/100)*extraR)*middleLift(t);
   r+=7*Math.sin(a*0.09)+4*Math.sin(a*0.21+1.3);
   return Math.max(30,r);
 }
 function pt(r,angleDeg){const rad=angleDeg*Math.PI/180;return [cx+r*Math.cos(rad),cy+r*Math.sin(rad)];}
+// Turn the bucket percentiles into integer weights that always total exactly 100. The
+// largest-remainder step avoids a visible 99% or 101% total after rounding.
+function rebasedWeights(buckets){
+  const values=buckets.map(b=>Math.max(0,b.percentile));
+  const total=values.reduce((sum,value)=>sum+value,0);
+  if(total===0){
+    const base=Math.floor(100/buckets.length);
+    return buckets.map((_,i)=>base+(i<100-base*buckets.length ? 1 : 0));
+  }
+  const exact=values.map(value=>value/total*100);
+  const weights=exact.map(Math.floor);
+  const remainder=100-weights.reduce((sum,value)=>sum+value,0);
+  const order=exact.map((value,i)=>i).sort((a,b)=>(exact[b]-weights[b])-(exact[a]-weights[a]));
+  for(let i=0;i<remainder;i++) weights[order[i]]++;
+  return weights;
+}
 function renderQuadrantLabels(){
-  // Blocks are ordered to match the quadrant each axis is drawn in: Angiogenesis
-  // upper right, Immunogenicity lower right, Fibrosis lower left, EMT upper left.
+  // Blocks are ordered to match the lobe each axis is drawn in: Angiogenesis upper
+  // right, Immunogenicity lower right, Fibrosis lower left, EMT upper left.
   const labelBlocks=[
     {x:755,y:72,width:235},
     {x:755,y:480,width:235},
@@ -416,6 +430,7 @@ function renderQuadrantLabels(){
   let svg='';
   axes.forEach((ax,i)=>{
     const pos=labelBlocks[i];
+    const weights=rebasedWeights(ax.buckets);
     svg+='<text x="'+pos.x+'" y="'+pos.y+'" fill="#202020" font-size="14" font-weight="800">'+ax.name+'</text>';
     svg+='<text id="axisScore-'+i+'" x="'+(pos.x+pos.width)+'" y="'+pos.y+'" text-anchor="end" fill="'+ax.color+'" font-size="15" font-weight="800">'+ax.score+'</text>';
     svg+='<line x1="'+pos.x+'" y1="'+(pos.y+9)+'" x2="'+(pos.x+pos.width)+'" y2="'+(pos.y+9)+'" stroke="'+ax.color+'" stroke-width="1.4" opacity="0.58"></line>';
@@ -424,49 +439,44 @@ function renderQuadrantLabels(){
       const y=pos.y+30+j*22;
       svg+='<rect x="'+pos.x+'" y="'+(y-8)+'" width="9" height="9" rx="2" fill="'+fill+'"></rect>';
       svg+='<text x="'+(pos.x+15)+'" y="'+y+'" fill="#2f2f2f" font-size="9.6" font-weight="650">'+bucket.name+'</text>';
-      svg+='<text x="'+(pos.x+pos.width)+'" y="'+y+'" text-anchor="end" fill="'+fill+'" font-size="10.5" font-weight="800">'+bucket.percentile+'</text>';
+      svg+='<text x="'+(pos.x+pos.width)+'" y="'+y+'" text-anchor="end" fill="'+fill+'" font-size="10.5" font-weight="800">'+weights[j]+'%</text>';
     });
   });
-  svg+='<text x="'+cx+'" y="678" text-anchor="middle" fill="#5f5d59" font-size="11">Petal length is the bucket percentile vs '+BASELINE_LABEL+'; the dashed contour marks the 50th percentile.</text>';
+  svg+='<text x="'+cx+'" y="678" text-anchor="middle" fill="#5f5d59" font-size="11">Bucket percentile weights are rebased within each TME lobe to total 100%.</text>';
   return svg;
 }
-function medianContour(axisIndex){
-  // Open arc (not closed to the core) tracing the 50th percentile across one quadrant,
-  // drawn on top of the petals as a dashed reference line.
-  const start=-90+axisIndex*90+axisGap, end=-90+(axisIndex+1)*90-axisGap;
-  const steps=24;
-  let d='';
-  for(let s=0;s<=steps;s++){
-    const ang=start+(end-start)*s/steps;
-    const [x,y]=pt(radiusAt(axisIndex,MEDIAN_PCT,ang),ang);
-    d+=(s===0?'M':'L')+x.toFixed(1)+' '+y.toFixed(1)+' ';
-  }
-  return '<path d="'+d+'" fill="none" stroke="'+MEDIAN_COLOR+'" stroke-width="1.1" stroke-dasharray="5 4" opacity="0.75"><title>50th percentile (cohort median)</title></path>';
-}
 function render(){
-  let svg='<defs></defs>';
-  let medianLayer='';
+  let fills='';
+  let petals='';
+  let outlines='';
   axes.forEach((ax,i)=>{
     const start=-90+i*90+axisGap, end=-90+(i+1)*90-axisGap;
     const bucketGap=1.6;
     const bucketAngle=(end-start-(ax.buckets.length-1)*bucketGap)/ax.buckets.length;
-    const bgFill=shade(ax.color,62);
-    // Faint axis-score envelope behind the bucket petals.
-    let bg='';
-    const bgSteps=24;
-    for(let s=0;s<=bgSteps;s++){
-      const ang=start+(end-start)*s/bgSteps;
-      const [x,y]=pt(radiusAt(i,ax.score,ang),ang);
-      bg+=(s===0?'M':'L')+x.toFixed(1)+' '+y.toFixed(1)+' ';
+    // Soft score envelope: outer edge at the axis-score percentile.
+    const envSteps=28;
+    const envOuter=[];
+    for(let s=0;s<=envSteps;s++){
+      const ang=start+(end-start)*s/envSteps;
+      envOuter.push(pt(radiusAt(i,ax.score,ang),ang));
     }
-    for(let s=bgSteps;s>=0;s--){
-      const ang=start+(end-start)*s/bgSteps;
+    let envFill='M'+envOuter[0][0].toFixed(1)+' '+envOuter[0][1].toFixed(1);
+    for(let k=1;k<envOuter.length;k++) envFill+=' L'+envOuter[k][0].toFixed(1)+' '+envOuter[k][1].toFixed(1);
+    for(let s=envSteps;s>=0;s--){
+      const ang=start+(end-start)*s/envSteps;
       const [x,y]=pt(coreR,ang);
-      bg+='L'+x.toFixed(1)+' '+y.toFixed(1)+' ';
+      envFill+=' L'+x.toFixed(1)+' '+y.toFixed(1);
     }
-    bg+='Z';
-    svg+='<path d="'+bg+'" fill="'+bgFill+'" opacity="0.16" stroke="'+ax.color+'" stroke-width="1.1" stroke-opacity="0.4"><title>'+ax.name+' axis envelope (percentile '+ax.score+')</title></path>';
-    // Each bucket keeps an equal angular slot; the petal length encodes its percentile.
+    envFill+=' Z';
+    fills+='<path d="'+envFill+'" fill="'+shade(ax.color,62)+'" opacity="0.16"><title>'+ax.name+' score envelope (percentile '+ax.score+')</title></path>';
+    let envLine='M'+envOuter[0][0].toFixed(1)+' '+envOuter[0][1].toFixed(1);
+    for(let k=1;k<envOuter.length;k++) envLine+=' L'+envOuter[k][0].toFixed(1)+' '+envOuter[k][1].toFixed(1);
+    // Soft rim drawn on top of the petals, marking the TME score's outer reach.
+    outlines+='<path d="'+envLine+'" fill="none" stroke="'+ax.color+'" stroke-width="1.4" stroke-opacity="0.55" stroke-linecap="round"></path>';
+    // Rebased weights sum to 100%. The largest is used as the lobe's visual ceiling.
+    const weights=rebasedWeights(ax.buckets);
+    const largestWeight=Math.max(...weights, 0);
+    const petalFraction=j=>largestWeight > 0 ? weights[j]/largestWeight : 0;
     ax.buckets.forEach((b,j)=>{
       const bStart=start+j*(bucketAngle+bucketGap);
       const bEnd=bStart+bucketAngle;
@@ -475,7 +485,9 @@ function render(){
       let d='';
       for(let s=0;s<=steps;s++){
         const ang=bStart+(bEnd-bStart)*s/steps;
-        const [x,y]=pt(radiusAt(i,b.percentile,ang),ang);
+        const outerRadius=radiusAt(i,ax.score,ang);
+        const radius=coreR+petalFraction(j)*(outerRadius-coreR);
+        const [x,y]=pt(radius,ang);
         d+=(s===0?'M':'L')+x.toFixed(1)+' '+y.toFixed(1)+' ';
       }
       for(let s=steps;s>=0;s--){
@@ -484,11 +496,10 @@ function render(){
         d+='L'+x.toFixed(1)+' '+y.toFixed(1)+' ';
       }
       d+='Z';
-      svg+='<path d="'+d+'" fill="'+fill+'" stroke="'+WEDGE_STROKE+'" stroke-width="0.7"><title>'+ax.name+' - '+b.name+' (percentile '+b.percentile+' vs '+BASELINE_LABEL+', '+b.subBuckets+' sub-buckets, '+b.nGenes+' genes)</title></path>';
+      petals+='<path d="'+d+'" fill="'+fill+'" stroke="'+WEDGE_STROKE+'" stroke-width="0.7"><title>'+ax.name+' - '+b.name+' ('+weights[j]+'% rebased bucket weight; percentile '+b.percentile+' vs '+BASELINE_LABEL+'; '+b.subBuckets+' sub-buckets, '+b.nGenes+' genes)</title></path>';
     });
-    medianLayer+=medianContour(i);
   });
-  svg+=medianLayer;
+  let svg='<defs></defs>'+fills+petals+outlines;
   svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+coreR+'" fill="'+CORE_FILL+'" stroke="'+RULE_COLOR+'" stroke-width="0.5"/>';
   svg+=renderQuadrantLabels();
   document.getElementById('tumour').innerHTML=svg;
