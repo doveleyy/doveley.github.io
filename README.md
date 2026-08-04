@@ -8,6 +8,9 @@ petals use bucket percentiles against the GC PD-1 harmonised cohort, rebased wit
 weights that total **100%**. The largest rebased bucket reaches the score envelope and every other bucket stays
 inside it. There is no percentile reference line.
 
+The legend keeps a second reading: each bucket has a baseline bar for its original cohort percentile, with a
+centre tick at the 50th percentile. This is separate from the rebased composition weights.
+
 Percentiles are used instead of raw bucket scores because absolute scores scale strongly with bucket size
 (sub-bucket count correlates with mean absolute bucket score at r = 0.987), so raw values are poor at showing
 patient-specific differences. Earlier share-based views are archived under `pages/`.

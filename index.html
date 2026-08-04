@@ -238,7 +238,7 @@ a:hover {
 <body>
 <main>
 <h1>TME Bucket Tumour Plot</h1>
-<p class="dek">A patient-level view of the tumour microenvironment scores and the gene-set buckets inside them. The four faint outer lobes are the TME scores. Within each lobe, bucket percentiles are rebased into weights that add to 100%, and the inner petals show those within-score proportions.</p>
+<p class="dek">A patient-level view of the tumour microenvironment scores and the gene-set buckets inside them. The four faint outer lobes are the TME scores. Within each lobe, bucket percentiles are rebased into weights that add to 100%, and the inner petals show those within-score proportions. Legend bars retain each bucket's original cohort percentile.</p>
 <h2 class="sr-only">Organic tumour shape divided into four TME score lobes, with bucket weights rebased to sum to 100 percent within each lobe</h2>
 <noscript><p class="load-error">This page draws the plot with JavaScript, which is disabled in this browser.</p></noscript>
 <p class="load-error" id="loadError" hidden></p>
@@ -251,7 +251,7 @@ a:hover {
   <button class="small-button" id="resetPatient" type="button" hidden>Reset to patient</button>
   <span class="patient-note" id="patientNote"></span>
 </div>
-<svg id="tumour" viewBox="0 0 1040 700" role="img"><title>TME bucket tumour plot</title><desc>Tumour profile split into four score lobes. Within each lobe, bucket percentile weights are rebased to sum to 100 percent.</desc></svg>
+<svg id="tumour" viewBox="0 0 1260 600" role="img"><title>TME bucket tumour plot</title><desc>Tumour profile split into four score lobes. Within each lobe, bucket percentile weights are rebased to sum to 100 percent.</desc></svg>
 </div>
 <div class="controls-panel">
 <div id="scoreControls"></div>
@@ -267,7 +267,7 @@ a:hover {
 <ul class="rationale-list">
   <li>The four faint outer lobes are the TME scores for the selected patient: Angiogenesis, Immunogenicity, Fibrosis and EMT. Each envelope reaches out to its axis score percentile, with a faint rim marking that edge.</li>
   <li>Inside each lobe, every bucket gets an equal angular slot. The bucket percentiles are rebased within that lobe, producing <strong>bucket weights that add to 100%</strong>. The largest rebased weight reaches the outer score envelope and the remaining petals are proportional to it.</li>
-  <li>There is no percentile reference line: the 100% total is a within-score composition, while the faint outer lobe remains the TME score percentile.</li>
+  <li>The legend's <strong>baseline bar</strong> retains the original bucket percentile against the GC PD-1 harmonised cohort; its centre tick is the 50th percentile (cohort median). This preserves the cohort comparison separately from the rebased 100% composition.</li>
   <li>Percentiles are used instead of raw bucket scores because absolute scores scale strongly with bucket size, so raw values are poor at showing patient-specific differences.</li>
   <li>The legend outside the plot lists each bucket name with its percentile value, so names and numbers stay on one line without covering the petals.</li>
 </ul>
@@ -379,12 +379,13 @@ const cohort = window.PATIENT_PETALS || null;
 const BASELINE_LABEL = cohort
   ? cohort.baselineLabel + ' (n = ' + cohort.cohortSize + ')'
   : 'baseline cohort';
-const cx=520, cy=350, baseR=86, extraR=158, coreR=32, axisGap=5;
+const cx=630, cy=300, baseR=76, extraR=148, coreR=30, axisGap=5;
 // Literal hex rather than var(--...) so the SVG also renders correctly when exported
 // standalone, outside the page's :root custom properties.
 const RULE_COLOR='#d9d1c4';
 const CORE_FILL='#fffdf8';
 const WEDGE_STROKE='#f0ebe2';
+const BASELINE_BAR_W=70;
 function shade(hex,amt){const n=parseInt(hex.slice(1),16);let r=(n>>16)+amt,g=(n>>8&255)+amt,b=(n&255)+amt;r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));return '#'+(1<<24|r<<16|g<<8|b).toString(16).slice(1);}
 function bucketFill(axis, bucketIndex){return axis.palette[bucketIndex % axis.palette.length];}
 // middleLift gives each lobe its organic bulge (thin near the axis gaps, full in the
@@ -418,15 +419,26 @@ function rebasedWeights(buckets){
   for(let i=0;i<remainder;i++) weights[order[i]]++;
   return weights;
 }
+// Original bucket percentile against the cohort. The midpoint tick is the cohort median.
+function baselineBar(x,y,percentile,color){
+  const h=6, top=y-5;
+  const fill=Math.max(0,Math.min(100,percentile))/100*BASELINE_BAR_W;
+  let svg='';
+  svg+='<rect x="'+x+'" y="'+top+'" width="'+BASELINE_BAR_W+'" height="'+h+'" rx="3" fill="'+shade(color,96)+'" opacity="0.5"></rect>';
+  svg+='<rect x="'+x+'" y="'+top+'" width="'+fill.toFixed(1)+'" height="'+h+'" rx="3" fill="'+color+'"></rect>';
+  svg+='<line x1="'+(x+BASELINE_BAR_W/2)+'" y1="'+(top-2)+'" x2="'+(x+BASELINE_BAR_W/2)+'" y2="'+(top+h+2)+'" stroke="#5f5d59" stroke-width="1"></line>';
+  return svg;
+}
 function renderQuadrantLabels(){
   // Blocks are ordered to match the lobe each axis is drawn in: Angiogenesis upper
   // right, Immunogenicity lower right, Fibrosis lower left, EMT upper left.
   const labelBlocks=[
-    {x:755,y:72,width:235},
-    {x:755,y:480,width:235},
-    {x:50,y:480,width:235},
-    {x:50,y:72,width:235}
+    {x:898,y:112,width:330},
+    {x:898,y:404,width:330},
+    {x:32,y:404,width:330},
+    {x:32,y:112,width:330}
   ];
+  const nameX=14, weightX=220, barX=254;
   let svg='';
   axes.forEach((ax,i)=>{
     const pos=labelBlocks[i];
@@ -434,15 +446,20 @@ function renderQuadrantLabels(){
     svg+='<text x="'+pos.x+'" y="'+pos.y+'" fill="#202020" font-size="14" font-weight="800">'+ax.name+'</text>';
     svg+='<text id="axisScore-'+i+'" x="'+(pos.x+pos.width)+'" y="'+pos.y+'" text-anchor="end" fill="'+ax.color+'" font-size="15" font-weight="800">'+ax.score+'</text>';
     svg+='<line x1="'+pos.x+'" y1="'+(pos.y+9)+'" x2="'+(pos.x+pos.width)+'" y2="'+(pos.y+9)+'" stroke="'+ax.color+'" stroke-width="1.4" opacity="0.58"></line>';
+    // Match the archived layout: headers have their own line above the legend rows.
+    const guideY=pos.y+27;
+    svg+='<text x="'+(pos.x+weightX)+'" y="'+guideY+'" text-anchor="end" fill="#5f5d59" font-size="8.6" font-weight="800" letter-spacing="0.05em">WEIGHT</text>';
+    svg+='<text x="'+(pos.x+barX)+'" y="'+guideY+'" fill="#5f5d59" font-size="8.6" font-weight="800" letter-spacing="0.05em">VS BASELINE</text>';
     ax.buckets.forEach((bucket,j)=>{
       const fill=bucketFill(ax,j);
-      const y=pos.y+30+j*22;
+      const y=pos.y+52+j*20;
       svg+='<rect x="'+pos.x+'" y="'+(y-8)+'" width="9" height="9" rx="2" fill="'+fill+'"></rect>';
-      svg+='<text x="'+(pos.x+15)+'" y="'+y+'" fill="#2f2f2f" font-size="9.6" font-weight="650">'+bucket.name+'</text>';
-      svg+='<text x="'+(pos.x+pos.width)+'" y="'+y+'" text-anchor="end" fill="'+fill+'" font-size="10.5" font-weight="800">'+weights[j]+'%</text>';
+      svg+='<text x="'+(pos.x+nameX)+'" y="'+y+'" fill="#2f2f2f" font-size="9.6" font-weight="650">'+bucket.name+'</text>';
+      svg+='<text x="'+(pos.x+weightX)+'" y="'+y+'" text-anchor="end" fill="'+fill+'" font-size="10.5" font-weight="800">'+weights[j]+'%</text>';
+      svg+=baselineBar(pos.x+barX,y,bucket.percentile,fill);
     });
   });
-  svg+='<text x="'+cx+'" y="678" text-anchor="middle" fill="#5f5d59" font-size="11">Bucket percentile weights are rebased within each TME lobe to total 100%.</text>';
+  svg+='<text x="'+cx+'" y="586" text-anchor="middle" fill="#5f5d59" font-size="11">Bucket weights total 100% within each TME lobe; baseline bars show cohort percentiles (centre tick = 50th).</text>';
   return svg;
 }
 function render(){
