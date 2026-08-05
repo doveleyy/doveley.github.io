@@ -14,6 +14,7 @@ __pycache__/
 
 # Optional figure exports from local check/render helpers
 build/
+plottme/output/
 
 # Large local-only source material
 local/

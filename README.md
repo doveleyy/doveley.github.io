@@ -1,84 +1,131 @@
 # TME Bucket Plot
 
-Static GitHub Pages prototype for the TME Bucket Plot.
+TME Bucket Plot is a static, patient-level visualisation of tumour microenvironment (TME) scores and their
+underlying gene-set buckets. It is designed to run as a simple web page and to export complete vector graphics for
+reports.
 
-The main page shows the selected patient as a single four-lobed **tumour**. Each lobe is one TME score, drawn as
-a soft envelope reaching out to the axis score percentile with a faint rim. Inside each lobe, gene-set bucket
-petals use bucket percentiles against the GC PD-1 harmonised cohort, rebased within each lobe into integer
-weights that total **100%**. The largest rebased bucket reaches the score envelope and every other bucket stays
-inside it. There is no percentile reference line.
+The site has no frontend build step. The committed patient payload is loaded directly by the page, so it can be
+hosted on GitHub Pages or any static web server.
 
-The legend keeps a second reading: each bucket has a baseline bar for its original cohort percentile, with a
-centre tick at the 50th percentile. This is separate from the rebased composition weights.
+## What the plot shows
 
-Percentiles are used instead of raw bucket scores because absolute scores scale strongly with bucket size
-(sub-bucket count correlates with mean absolute bucket score at r = 0.987), so raw values are poor at showing
-patient-specific differences. Earlier share-based views are archived under `pages/`.
+Each patient is shown as a four-lobed tumour:
 
-## Preview locally
+- **Outer coloured lobes** represent the percentile of the four TME scores: Angiogenesis, Immunogenicity,
+  Fibrosis, and EMT.
+- A **faint grey silhouette** shows the 100th-percentile extent, providing a common visual scale.
+- A **dashed arc** in every lobe marks the 50th percentile for that TME score.
+- **Inner bucket petals** represent percentile-derived *relative signal*. Bucket percentiles are rebased within
+  each TME score so their displayed values total exactly 100%.
+- The legend's **baseline bar** shows the original bucket percentile against the baseline cohort. Its centre tick
+  is the 50th percentile.
+
+Relative signal shows which buckets are most prominent within a patient's percentile pattern. It is not a raw-score
+contribution, a variance decomposition, or a percentage of the TME score.
+
+## Quick start
+
+Start a local static server from the repository root:
 
 ```bash
 ./view_tme_visual.sh
 ```
 
-Then open:
-
-```text
-http://127.0.0.1:8000/index.html
-```
-
-If port `8000` is busy:
+Open [http://127.0.0.1:8000/index.html](http://127.0.0.1:8000/index.html). To use another port:
 
 ```bash
 ./view_tme_visual.sh 8001
 ```
 
-## Site structure
+The checked-in `data/outputs/patient_petals.js` file is sufficient to view the plot; no data build is required for
+normal previewing.
 
-- `index.html` - main page: single tumour length plot, reading notes, gene explorer link, and archive links.
-- `pages/gene-set-explorer.html` - filterable mapping table for genes, buckets, and subbuckets.
-- `pages/tme-bucket-normalised-share.html` - archived share-based view (shares normalised by sub-bucket count).
-- `pages/tme-bucket-raw-share.html` - archived share-based view before sub-bucket normalisation.
-- `pages/score-size-bias.html` - archived rationale page for bucket-size bias and raw contribution examples.
-- `pages/score-blob-summary.html` - archived alternate visual.
-- `data/` - source CSVs and bucket mapping outputs used to generate/check the figures.
-- `data/outputs/patient_petals.js` - generated per-patient plot data loaded by `index.html`.
-- `scripts/` - analysis helper scripts.
-- `tme_bucket_percentile_overlay.html`, `score_size_bias_scatter.html`, `tme_score_blob_summary.html`, `tme_organic_tumour_overlay.html` - compatibility redirects for older links.
+## Data flow
 
-## Regenerating Patient Data
+```text
+data/gc_pd1_harmonised.csv
+        │
+        ├── scripts/build_patient_petals.py
+        │
+        └── data/outputs/patient_petals.js ──┬── index.html
+                                              └── plottme/generate.py → standalone SVG
+```
 
-The site itself has no build step: `data/outputs/patient_petals.js` is generated ahead of time and committed.
-Regenerate it after changing the source CSV or bucket values with:
+`patient_petals.js` contains patient IDs, TME-score percentiles, bucket percentiles, raw bucket values, and the
+bucket schema used by both the web page and the SVG generator.
+
+### Rebuild the patient payload
+
+Install [Pixi](https://pixi.sh/) if needed, then run:
 
 ```bash
 pixi run build-data
 ```
 
-The generator asserts that every axis score equals the sum of its bucket scores, that there are no missing
-score values, that every bucket has a sub-bucket count in `data/outputs/tme_subbucket_mapping.csv`, and that
-every displayed bucket share total is exactly 100%.
+Run this after changing `data/gc_pd1_harmonised.csv`, the score definitions, or the bucket mapping. The build checks
+that each TME score equals the sum of its buckets, required values are present, and every bucket has sub-bucket
+metadata.
 
-## Optional analysis helper
+## Generate report-ready SVGs
 
-The site itself has no build step. To rerun the optional analysis helper, install the Pixi environment and run:
+[`plottme/generate.py`](plottme/generate.py) is a dependency-free Python generator. It creates one complete,
+standalone SVG containing the tumour, TME percentile arcs, bucket petals, legends, labels, and background.
+
+Export one patient from the default input, `data/outputs/patient_petals.js`:
 
 ```bash
-pixi run python scripts/analyze_gc_pd1_scores.py
+python3 plottme/generate.py --patient RHF1545
 ```
 
-## GitHub Pages
+The result is written to:
 
-This repo is ready to publish from the repository root. In GitHub:
+```text
+plottme/output/RHF1545-tme-bucket-plot.svg
+```
 
-1. Go to **Settings > Pages**.
-2. Set **Source** to the branch you push.
-3. Set the folder to `/root`.
-4. Save.
+Choose a report-template destination explicitly:
 
-The public page will load `index.html` automatically.
+```bash
+python3 plottme/generate.py \
+  --patient RHF1545 \
+  --output reports/assets/RHF1545.svg
+```
 
-## Notes
+Export every patient:
 
-- The oversized discussion deck is intentionally kept in `local/` and ignored by Git, because GitHub blocks files over 100 MB.
-- The site is plain HTML/CSS/JavaScript and has no build step.
+```bash
+python3 plottme/generate.py --all --output reports/assets/tme
+```
+
+To use a different compatible payload, provide it with `--input`:
+
+```bash
+python3 plottme/generate.py \
+  --input path/to/patient_petals.js \
+  --patient RHF1545 \
+  --output reports/assets/RHF1545.svg
+```
+
+Generated files under `plottme/output/` are ignored by Git. See [plottme/README.md](plottme/README.md) for the
+generator's focused reference.
+
+## Repository layout
+
+| Path | Purpose |
+| --- | --- |
+| `index.html` | Main interactive TME Bucket Plot. |
+| `data/gc_pd1_harmonised.csv` | Harmonised patient-level source scores. |
+| `data/outputs/` | Generated patient payload and score/bucket mapping tables. |
+| `scripts/build_patient_petals.py` | Builds the patient payload consumed by the plot and SVG generator. |
+| `plottme/` | Lightweight standalone SVG generator and its documentation. |
+| `pages/gene-set-explorer.html` | Browser for score, bucket, sub-bucket, and gene mappings. |
+| `pages/` | Archived alternative visualisations and rationale pages. |
+| `pixi.toml` | Reproducible Python environment and project tasks. |
+
+The root-level `*_overlay.html`, `*_summary.html`, and `*_scatter.html` files are compatibility redirects for older
+links.
+
+## Static hosting
+
+Publish the repository root with GitHub Pages or another static host. The public entry point is `index.html`; it
+loads the committed patient payload with a script tag and requires no server-side application.
