@@ -56,14 +56,15 @@ def middle_lift(t: float) -> float:
 
 
 def radius_at(axis_index: int, percentile: float, angle: float) -> float:
-    """Organic lobe radius for an axis percentile at a particular angle."""
+    """Organic lobe radius scaled across the space outside the centre disc."""
     angle_normalised = angle % 360
     start = -90 + axis_index * 90 + AXIS_GAP
     end = -90 + (axis_index + 1) * 90 - AXIS_GAP
     t = (angle - start) / (end - start)
-    radius = (BASE_R + max(0, min(100, percentile)) / 100 * EXTRA_R) * middle_lift(t)
-    radius += 7 * math.sin(angle_normalised * 0.09) + 4 * math.sin(angle_normalised * 0.21 + 1.3)
-    return max(30, radius)
+    full_radius = (BASE_R + EXTRA_R) * middle_lift(t)
+    full_radius += 7 * math.sin(angle_normalised * 0.09) + 4 * math.sin(angle_normalised * 0.21 + 1.3)
+    fraction = max(0, min(100, percentile)) / 100
+    return CORE_R + fraction * (full_radius - CORE_R)
 
 
 def path_from_points(points: list[tuple[float, float]], close: bool = False) -> str:
@@ -142,20 +143,24 @@ def render_svg(payload: dict, patient: dict) -> str:
         backdrops.append(
             f'<path d="{lobe_path(axis_index, 100, start, end)}" fill="{FULL_SCALE_FILL}" opacity="0.30"><title>{escape(display_name)} full-scale reference (100th percentile)</title></path>'
         )
-        envelopes.append(
-            f'<path d="{lobe_path(axis_index, score_percentile, start, end)}" fill="{shade(colour, 62)}" opacity="0.20"><title>{escape(display_name)} score envelope (percentile {score_percentile})</title></path>'
-        )
+        if score_percentile > 0:
+            envelopes.append(
+                f'<path d="{lobe_path(axis_index, score_percentile, start, end)}" fill="{shade(colour, 62)}" opacity="0.20"><title>{escape(display_name)} score envelope (percentile {score_percentile})</title></path>'
+            )
         median_arcs.append(
             f'<path d="{arc_path(axis_index, 50, start, end)}" fill="none" stroke="{TME_MEDIAN_COLOR}" stroke-width="1.2" stroke-dasharray="5 4" stroke-linecap="round" opacity="0.78"><title>{escape(display_name)} 50th percentile</title></path>'
         )
-        outlines.append(
-            f'<path d="{arc_path(axis_index, score_percentile, start, end)}" fill="none" stroke="{colour}" stroke-width="1.4" stroke-opacity="0.55" stroke-linecap="round"/>'
-        )
+        if score_percentile > 0:
+            outlines.append(
+                f'<path d="{arc_path(axis_index, score_percentile, start, end)}" fill="none" stroke="{colour}" stroke-width="1.4" stroke-opacity="0.55" stroke-linecap="round"/>'
+            )
 
         bucket_gap = 1.6
         bucket_angle = (end - start - (len(bucket_names) - 1) * bucket_gap) / len(bucket_names)
         largest_weight = max(weights) if weights else 0
         for bucket_index, (bucket_name, percentile, weight) in enumerate(zip(bucket_names, bucket_percentiles, weights)):
+            if score_percentile <= 0:
+                continue
             bucket_start = start + bucket_index * (bucket_angle + bucket_gap)
             bucket_end = bucket_start + bucket_angle
             fraction = weight / largest_weight if largest_weight else 0
@@ -167,7 +172,7 @@ def render_svg(payload: dict, patient: dict) -> str:
             inner = [point(CORE_R, bucket_start + (bucket_end - bucket_start) * step / 16) for step in range(16, -1, -1)]
             petal_colour = palette[bucket_index % len(palette)]
             title = (
-                f"{display_name} - {bucket_name} ({weight}% relative signal; percentile {percentile} vs {baseline_label}; "
+                f"{display_name} - {bucket_name} ({weight}% relative percentile; percentile {percentile} vs {baseline_label}; "
                 f"{schema['nSub'][bucket_index]} sub-buckets)"
             )
             petals.append(
@@ -180,7 +185,7 @@ def render_svg(payload: dict, patient: dict) -> str:
                 f'<text x="{label_x}" y="{label_y}" fill="#202020" font-size="14" font-weight="800">{escape(display_name)}</text>',
                 f'<text x="{label_x + label_width}" y="{label_y}" text-anchor="end" fill="{colour}" font-size="15" font-weight="800">{score_percentile}</text>',
                 f'<line x1="{label_x}" y1="{label_y + 9}" x2="{label_x + label_width}" y2="{label_y + 9}" stroke="{colour}" stroke-width="1.4" opacity="0.58"/>',
-                f'<text x="{label_x + 220}" y="{label_y + 27}" text-anchor="end" fill="#5f5d59" font-size="8.6" font-weight="800" letter-spacing="0.05em">REL. SIGNAL</text>',
+                f'<text x="{label_x + 220}" y="{label_y + 27}" text-anchor="end" fill="#5f5d59" font-size="8.6" font-weight="800" letter-spacing="0.05em">RELATIVE PERCENTILE</text>',
                 f'<text x="{label_x + 254}" y="{label_y + 27}" fill="#5f5d59" font-size="8.6" font-weight="800" letter-spacing="0.05em">VS BASELINE</text>',
             ]
         )
@@ -200,7 +205,7 @@ def render_svg(payload: dict, patient: dict) -> str:
     key = (
         f'<line x1="{CX - 154}" y1="{key_y}" x2="{CX - 122}" y2="{key_y}" stroke="{TME_MEDIAN_COLOR}" stroke-width="1.2" stroke-dasharray="5 4" stroke-linecap="round" opacity="0.78"/>'
         f'<text x="{CX - 112}" y="{key_y + 4}" fill="#4a4640" font-size="10.5" font-weight="700">TME score median · 50th percentile</text>'
-        f'<text x="{CX}" y="586" text-anchor="middle" fill="#5f5d59" font-size="11">Relative signals total 100% within each TME lobe; baseline bars show bucket percentiles.</text>'
+        f'<text x="{CX}" y="586" text-anchor="middle" fill="#5f5d59" font-size="11">Relative percentiles total 100% within each TME lobe; baseline bars show bucket percentiles.</text>'
     )
     patient_title = escape(f"TME bucket tumour plot — {patient['id']} ({patient['response']})")
     return "\n".join(
@@ -208,7 +213,7 @@ def render_svg(payload: dict, patient: dict) -> str:
             '<?xml version="1.0" encoding="UTF-8"?>',
             f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{HEIGHT}" viewBox="0 0 {WIDTH} {HEIGHT}" role="img" aria-labelledby="title desc">',
             f"<title id=\"title\">{patient_title}</title>",
-            '<desc id="desc">TME score percentile tumour plot with relative bucket signals and cohort percentile baseline bars.</desc>',
+            '<desc id="desc">TME score percentile tumour plot with relative bucket percentiles and cohort percentile baseline bars.</desc>',
             f'<rect width="{WIDTH}" height="{HEIGHT}" fill="#f8f6f1"/>',
             *backdrops,
             *envelopes,

@@ -15,12 +15,12 @@ Each patient is shown as a four-lobed tumour:
   Fibrosis, and EMT.
 - A **faint grey silhouette** shows the 100th-percentile extent, providing a common visual scale.
 - A **dashed arc** in every lobe marks the 50th percentile for that TME score.
-- **Inner bucket petals** represent percentile-derived *relative signal*. Bucket percentiles are rebased within
+- **Inner bucket petals** represent percentile-derived *relative percentiles*. Bucket percentiles are rebased within
   each TME score so their displayed values total exactly 100%.
 - The legend's **baseline bar** shows the original bucket percentile against the baseline cohort. Its centre tick
   is the 50th percentile.
 
-Relative signal shows which buckets are most prominent within a patient's percentile pattern. It is not a raw-score
+Relative percentile shows which buckets are most prominent within a patient's percentile pattern. It is not a raw-score
 contribution, a variance decomposition, or a percentage of the TME score.
 
 ## Quick start
